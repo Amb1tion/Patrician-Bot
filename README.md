@@ -1,5 +1,5 @@
 # Patrician-Bot
-A Personal bot that runs on the Discord Platform.
+A Personal bot that runs on the Discord Chatting Platform.
 
 # Commands And Uses
 
@@ -15,9 +15,9 @@ _**General Commands**_
 *Quoting Messages*: Quote memorable chat messages.
 ![quote](https://i.imgur.com/7747Rdn.png)
 
-*Guessing Game*: Guess the artist behind the lyrics.
+*Guessing Game*: Guess the artist behind the lyrics to score points and get to the top of the leaderboard.
 ![lyrics](https://i.imgur.com/CFUHzhv.png)
-
+![leaderboard](https://i.imgur.com/KqKlizX.png)
 _**Collages And Charts**_
 
 Get a collage of your most listened albums of the week 
