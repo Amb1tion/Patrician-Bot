@@ -78,10 +78,12 @@ class quotes():
                         if answer is None:
                             await self.bot.say('Operation timed out, make up your mind faster.')
                         else:
+                            print('a')
                             dict.pop(str(index))
-                            for id in range(index+1,num):
-                                dict[id-1]=dict[str(id)]
-                            dict.pop(str(num-1))
+                            if index != num-1:
+                                for id in range(index+1,num):
+                                    dict[id-1]=dict[str(id)]
+                                dict.pop(str(num-1))
                             await conn.execute('UPDATE servers SET quotes = $1 WHERE serverid = $2', json.dumps(dict),
                                                int(ctx.message.server.id))
                             await conn.execute('UPDATE servers SET quote_num=$1 WHERE serverid= $2', num-1,int(ctx.message.server.id))
