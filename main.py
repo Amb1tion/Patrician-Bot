@@ -50,6 +50,7 @@ async def prefix_fetch():#establishing prefix cache for all servers (possibly in
 		async with bot.pool.acquire() as conn:  # getting values to append to prefix_cache
 			async with conn.transaction():
 				async for serverid, prefix in conn.cursor('SELECT serverid,prefix FROM servers'):
+
 					prefix_cache[serverid] = prefix
 
 
@@ -205,8 +206,7 @@ async def enable(ctx,value:str):
 		await bot.say('Something went wrong,you may have tried to enable a command that\'s already enabled.')
 @bot.command()  # bot info command
 async def info(*args):
-	return await bot.say("My code is currently under construction." +
-						 "\nMy prefix is '!' and working commands so far are `yt`,`lyrics`,`fm`,`chart` and`choose` , use `!help` to learn more for each command")
+	return await bot.say("I'm a music bot who spent way too much time on rym and last.fm , my code can be found here https://github.com/Amb1tion/Patrician-Bot/")
 
 
 @bot.command()
