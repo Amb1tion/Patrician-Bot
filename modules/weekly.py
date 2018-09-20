@@ -42,7 +42,7 @@ class weekly():
 			async with session.get(link) as resp:
 				var = await resp.read()
 				f = io.BytesIO(var)
-		await self.bot.send_file(ctx.message.channel,f,filename='image.png',content=ctx.message.author.mention + ' here\'s your entry level chart')
+		await self.bot.send_file(ctx.message.channel,f,filename='image.png',content=ctx.message.author.mention + ' here\'s your chart')
 
 	@commands.command(pass_context=True)
 	@commands.cooldown(rate=1.0, per=5.0, type=commands.BucketType.channel)
@@ -82,7 +82,7 @@ class weekly():
 				var = await resp.read()
 				f = io.BytesIO(var)
 		await self.bot.send_file(ctx.message.channel, f, filename='image.png',
-								 content=ctx.message.author.mention + ' here\'s your entry level chart')
+								 content=ctx.message.author.mention + ' here\'s your chart')
 
 	@commands.command(pass_context=True)
 	@commands.cooldown(rate=1.0, per=5.0, type=commands.BucketType.channel)
@@ -123,7 +123,7 @@ class weekly():
 				var = await resp.read()
 				f = io.BytesIO(var)
 		await self.bot.send_file(ctx.message.channel, f, filename='image.png',
-								 content=ctx.message.author.mention + ' here\'s your entry level chart')
+								 content=ctx.message.author.mention + ' here\'s your chart')
 
 def setup(bot):
 	bot.add_cog(weekly(bot))
