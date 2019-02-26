@@ -1,4 +1,4 @@
-import discord,aiohttp,asyncio,async_timeout,json,os,configparser,re
+import discord,aiohttp,configparser,json
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
@@ -16,7 +16,7 @@ API_KEY=config['keys']['lastfm_key']
 
 API_SECRET=config['client']['lastfm_api_secret']
 
-username = 'amb1tion'
+
 
 class lastfm():
     def __init__(self,bot):
@@ -74,8 +74,8 @@ class lastfm():
                 await self.bot.say(msg)
 
     def output(self,ctx,mess,user):
-        image1=mess['recenttracks']['track'][0]['image'][1]['#text']
-        image2=mess['recenttracks']['track'][1]['image'][1]['#text']
+        image1=mess['recenttracks']['track'][0]['image'][2]['#text']
+        image2=mess['recenttracks']['track'][1]['image'][2]['#text']
         if image1 is "":
             image1 = "https://i.imgur.com/ZneU91v.jpg"
         if image2 is "":
@@ -115,7 +115,6 @@ class lastfm():
     async def get(self,ctx,args):
         await self.bot.send_typing(ctx.message.channel)
         try:
-            not_author=True
             if ctx.message.mentions[0].id:
                 try:
                     async with self.pool.acquire() as conn:

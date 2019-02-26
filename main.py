@@ -11,7 +11,8 @@ startup_extensions = ['modules.youtube',
 					  'modules.rym',
 					  'modules.general',
 					  'modules.weekly',
-					  'modules.quotes']
+					  'modules.quotes',
+					  'modules.taste']
 
 prefix_cache = {}
 
