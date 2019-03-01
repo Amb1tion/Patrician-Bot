@@ -4,7 +4,7 @@ from os import remove as f_remove
 import functools
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")
+matplotlib.use("Agg") #because default is tkinter and that doesn't work well outside main thread
 import matplotlib.pyplot as plt
 from io import BytesIO
 config=configparser.ConfigParser()
@@ -36,7 +36,7 @@ class taste():
         session.close()
         return data
 
-    async def fetch(self,ctx, opt, args):
+    async def fetch(self,ctx, opt, args): #for requesting top artists
         async with self.bot.pool.acquire() as conn:
             try:
                 if opt is None:
@@ -60,7 +60,7 @@ class taste():
             except:
                 await self.bot.say(msg)
 
-    def op(self,artists, user1, user2, name1, name2):
+    def op(self,artists, user1, user2, name1, name2): #graph generating function
         y = np.arange(len(artists))
         fig, axes = plt.subplots(ncols=2, sharey=True)
         axes[0].barh(y, user1, align='center', color='gray', height=0.3)
@@ -94,14 +94,10 @@ class taste():
 
 
 
-    async def execute(self,artists, user1, user2, name1, name2):
+    async def execute(self,artists, user1, user2, name1, name2): #making the blocking matplotlib function async
         thing = functools.partial(self.op, artists, user1, user2, name1, name2)
         some_stuff = await self.bot.loop.run_in_executor(None, thing)
         return some_stuff
-
-    async def delete(self,name):
-        thing = functools.partial(f_remove, name)
-        some_stuff = await self.bot.loop.run_in_executor(None, thing)
 
     @commands.command(pass_context=True)
     async def taste(self, ctx, args):
@@ -134,7 +130,7 @@ class taste():
             user_name2 = args
             list2 = await self.fetch(ctx, "get", user_name2)
         result = {}
-        for i in range(100):
+        for i in range(100): #comparing top 100 , weighting by ratio multiplied by sum of scrobbles on an artist
             artist_1 = list1['topartists']['artist'][i]
             for j in range(100):
                 artist_2 = list2['topartists']['artist'][j]
@@ -144,7 +140,7 @@ class taste():
                     result[artist_1['name']] = [a, b, a / b * (a + b) if a < b else b / a * (a + b)]
                     break
         if result is not None:
-            final = sorted(result.items(), key=lambda foo: foo[1][2], reverse=True)
+            final = sorted(result.items(), key=lambda foo: foo[1][2], reverse=True) #sorting by the weights
         else:
             self.bot.say("You have no common artists with this user.")
             raise Exception("No Common Artists")
