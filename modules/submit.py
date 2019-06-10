@@ -12,7 +12,7 @@ class submit():
 	async def submit(self,ctx):
 		msg = "Reply to this conversation with your server invite and (brief) description. Read #how-to-list before applying."
 		invalid="Your reply was late or you did not provide a valid discord invite(formatted as https://discord.gg/) use the !submit command again"
-		case1="var is none"
+		confirm="Your application has been submitted and is being looked over by the mods , expect a reply in a few days"
 		await self.bot.send_message(ctx.message.author,msg)
 		def check(message):
 			return True
@@ -29,6 +29,7 @@ class submit():
 				say = "Sent by <@" + ctx.message.author.id +">"
 				await self.bot.send_message(discord.Object("587466715407843328"),reply.content)
 				await self.bot.send_message(discord.Object("587466715407843328"),say)
+				await self.bot.send_message(ctx.message.author,confirm)
 
 			else:
 				await self.bot.send_message(ctx.message.author,invalid)
