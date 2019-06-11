@@ -1,46 +1,57 @@
 import discord,re
 from discord.ext import commands
-def server_check(ctx):
-	return ctx.message.server.id == "448081955221798923"
+from discord.ext.commands import BucketType
 
-class submit():
+
+
+class charts():
 	def __init__(self,bot):
 		self.bot=bot
+		self.pool=bot.pool
 
-	@commands.command(pass_context=True)
-	@commands.check(server_check)
-	async def submit(self,ctx):
-		msg = "Reply to this conversation with your server invite and (brief) description. Read #how-to-list before applying."
-		invalid="Your reply was late or you did not provide a valid discord invite(formatted as https://discord.gg/) use the !submit command again"
-		case1="var is none"
-		await self.bot.send_message(ctx.message.author,msg)
-		def check(message):
-			return True
-		regex = re.compile("https://(discord\.gg/[^\s]*)")
-		reply = await self.bot.wait_for_message(author = ctx.message.author,check = check)
-		var = regex.search(reply.content)
-		if var is None:
-			
-			await self.bot.send_message(ctx.message.author,invalid)
-		else:
-			
-			thing = await self.bot.get_invite(var.group())
-			if thing is not None:
-				say = "Sent by <@" + ctx.message.author.id +">"
-				await self.bot.send_message(discord.Object("587466715407843328"),reply.content)
-				await self.bot.send_message(discord.Object("587466715407843328"),say)
 
-			else:
-				await self.bot.send_message(ctx.message.author,invalid)
-				
-	@commands.command(pass_context=True)
-	async def regex(self,ctx,msg:str):
-		regex = re.compile(r'discord\.gg/[^\s]*')
-		var = regex.search(msg)
-		if var is None:
-			await self.bot.say("none")
-		else:
-			await self.bot.say(var.group())
-		
+	@commands.group(pass_context=True)
+	async def chart(self,ctx):
+		if ctx.invoked_subcommand is None:
+			try:
+				async with self.pool.acquire() as conn:
+					val = await conn.fetchval('SELECT chart FROM users WHERE userid = $1',int(ctx.message.author.id))
+				await self.bot.say(val)
+			except:
+				await self.bot.say('Your chart isn\'t in the database , fix this by doing `!chart submit imagelinkhere`')
+	
+	@chart.command(pass_context=True, description = 'Use this to submit your chart')
+	async def submit(self,ctx,link:str):
+		await self.bot.send_typing(ctx.message.channel)
+		Regex = re.compile(
+			'^https://.*\.com/.+(\.jpg|\.png|\.jpeg)$|^http://.*\.com/.+(\.jpg|\.png|\.jpeg)$|.*\.com/.+(\.jpg|\.png|\.jpeg)$')
+		try:
+			var = Regex.search(link)
+			if var is not None:
+				async with self.pool.acquire() as conn:
+					try:
+						await conn.execute('''INSERT INTO users(userid,chart) VALUES($1,$2)''',int(ctx.message.author.id),link)
+					except:
+						await conn.execute('''UPDATE users SET chart = $1 WHERE userid = $2''',link,int(ctx.message.author.id))
+					await self.bot.say("Your chart has been submitted, you may call it using !chart")
+			elif var is None:
+				await self.bot.say("Invalid Input.")
+
+		except Exception as e:
+			print(e)
+			await self.bot.say("Invalid Input")
+
+
+	
+	@chart.command(pass_context=True , description= "Tag whoever's chart you want to judge. example: !chart get @Amb1tion#6969")
+	async def get(self,ctx,m:discord.Member):
+		await self.bot.send_typing(ctx.message.channel)
+		async with self.pool.acquire() as conn:
+			try:
+				val = await conn.fetchval('SELECT chart FROM users WHERE userid = $1',int(m.id))
+				await self.bot.say(val)
+			except:
+				await self.bot.say('Something went wrong , maybe they haven\'t submitted a chart yet?')
+
 def setup(bot):
-	bot.add_cog(submit(bot))
+	bot.add_cog(charts(bot))
