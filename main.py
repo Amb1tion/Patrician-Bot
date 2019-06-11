@@ -13,7 +13,8 @@ startup_extensions = ['modules.youtube',
 					  'modules.weekly',
 					  'modules.quotes',
 					  'modules.taste',
-					  'modules.submit']
+					  'modules.submit',
+					  'modules.countdown']
 
 prefix_cache = {}
 
