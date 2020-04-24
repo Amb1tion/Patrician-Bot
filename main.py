@@ -4,7 +4,10 @@ config = configparser.ConfigParser()
 config.read('bot_config.ini')
 startup_extensions = ['modules.youtube'
 					, 'modules.rym'
-					, 'modules.admin']
+					, 'modules.admin'
+					, 'modules.charts'
+					, 'modules.countdown'
+					, 'modules.general']
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
@@ -13,8 +16,8 @@ def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
 
 async def get_pre(bot, message):
-	if int(message.guild.id) in prefix_cache and int(message.guild.id) is not None:
-		return prefix_cache[int(message.guild.id)]
+	if message.guild.id in prefix_cache and message.guild.id is not None:
+		return prefix_cache[message.guild.id]
 
 bot = commands.AutoShardedBot(command_prefix=get_pre,fetch_offline_members=False)
 
