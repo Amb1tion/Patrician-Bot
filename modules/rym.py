@@ -1,31 +1,31 @@
-import discord,re
+import discord,os,re
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
 
 
 
-class rym():
+class rymCog(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 		self.pool=bot.pool
 	
 	
-	@commands.group(pass_context=True)
+	@commands.group()
 	async def rym(self,ctx):
 		if ctx.invoked_subcommand is None:
 			async with self.pool.acquire() as conn:
 				try:
-					user = await conn.fetchval('SELECT rym FROM users WHERE userid=$1',int(ctx.message.author.id))
+					user = await conn.fetchval('SELECT rym FROM users WHERE userid=$1',ctx.message.author.id)
 					link = "https://rateyourmusic.com/~"+user
-					await self.bot.say("Here is your well maintained and organized account! "+link)
+					await ctx.message.channel.send("Here is your well maintained and organized account! "+link)
 				except:
-					await self.bot.say("Huh? i couldn't find your account try submitting it with `rym set username`")
+					await self.ctx.message.channel.send("Huh? i couldn't find your account try submitting it with `rym set username`")
 
  
 
 
-	@rym.command(pass_context=True)
+	@rym.command()
 	async def set(self,ctx,args:str):
 		Regex=re.compile('^([A-Za-z_.0-9]{3,24}$)')
 		mo=Regex.search(args)
@@ -36,11 +36,11 @@ class rym():
 
 				except:
 					await conn.execute('''UPDATE users SET rym = $1 WHERE userid = $2''',args,int(ctx.message.author.id))
-				await self.bot.say("Your account has been submitted!")
+				await self.ctx.message.channel.send("Your account has been submitted!")
 
 
 		else:
-			await self.bot.say('That does not look like a valid username to me.')
+			await self.ctx.message.channel.send('That does not look like a valid username to me.')
 
 	@rym.command(pass_context=True)
 
@@ -49,11 +49,11 @@ class rym():
 			async with self.pool.acquire() as conn:
 				user = await conn.fetchval('SELECT rym FROM users WHERE userid = $1',int(ctx.message.mentions[0].id))
 				link = "https://rateyourmusic.com/~" + user
-				await self.bot.say("Here's the account: "+link)
+				await self.ctx.message.channel.send("Here's the account: "+link)
 		except:
-			await self.bot.say("Something went wrong, maybe they don't have a rym.")
+			await self.ctx.message.channel.send("Something went wrong, maybe they don't have a rym.")
 
 
 
 def setup(bot):
-	bot.add_cog(rym(bot))
+	bot.add_cog(rymCog(bot))
