@@ -1,47 +1,44 @@
 import discord,re
 from discord.ext import commands
-def server_check(ctx):
-	return ctx.message.server.id == "448081955221798923"
 
-class submit():
+#channel id 587466715407843328 , server id = 448081955221798923
+def server_check(ctx):
+	return ctx.message.guild.id == 205630530237104128
+
+class submitCog(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 
-	@commands.command(pass_context=True)
+	@commands.command()
 	@commands.check(server_check)
 	async def submit(self,ctx):
 		msg = "Reply to this conversation with your server invite and (brief) description. Read #how-to-list before applying."
 		invalid="Your reply was late or you did not provide a valid discord invite(formatted as https://discord.gg/) use the !submit command again"
 		confirm="Your application has been submitted and is being looked over by the mods , expect a reply in a few days"
-		await self.bot.send_message(ctx.message.author,msg)
+		await ctx.message.author.send(msg)
 		def check(message):
-			return True
+			return message.author.id == ctx.message.author.id and not message.guild
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
-		reply = await self.bot.wait_for_message(author = ctx.message.author,check = check)
+		reply = await self.bot.wait_for('message',check = check)
 		var = regex.search(reply.content)
 		if var is None:
 			
-			await self.bot.send_message(ctx.message.author,invalid)
+			await ctx.message.author.send(invalid)
 		else:
-			
-			thing = await self.bot.get_invite(var.group())
+			thing = await self.bot.fetch_invite(var.group())
 			if thing is not None:
-				say = "Sent by <@" + ctx.message.author.id +">"
-				await self.bot.send_message(discord.Object("587466715407843328"),reply.content)
-				await self.bot.send_message(discord.Object("587466715407843328"),say)
-				await self.bot.send_message(ctx.message.author,confirm)
+				if thing.approximate_member_count > 30:
+					say = "Sent by <@" + str(ctx.message.author.id) +">"
+					channel = self.bot.get_channel(247813557838807041)
+					await channel.send(reply.content)
+					await channel.send(say)
+					await ctx.message.author.send(confirm)
+				else:
+					await ctx.message.author.send("Your server does not have enough members to apply for submission , please re-read the #how-to-list channel carefully.")
 
 			else:
-				await self.bot.send_message(ctx.message.author,invalid)
+				await ctx.message.author.send(invalid)
 				
-	@commands.command(pass_context=True)
-	async def regex(self,ctx,msg:str):
-		regex = re.compile(r'discord\.gg/[^\s]*')
-		var = regex.search(msg)
-		if var is None:
-			await self.bot.say("none")
-		else:
-			await self.bot.say(var.group())
 		
 def setup(bot):
-	bot.add_cog(submit(bot))
+	bot.add_cog(submitCog(bot))

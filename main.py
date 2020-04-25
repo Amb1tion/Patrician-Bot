@@ -1,4 +1,4 @@
-import discord,datetime,configparser,asyncpg,asyncio,re,json
+import discord,datetime,configparser,asyncpg,asyncio,re,json,logging
 from discord.ext import commands
 config = configparser.ConfigParser()
 config.read('bot_config.ini')
@@ -7,18 +7,25 @@ startup_extensions = ['modules.youtube'
 					, 'modules.admin'
 					, 'modules.charts'
 					, 'modules.countdown'
-					, 'modules.general']
+					, 'modules.general'
+					, 'modules.lastfm'
+					, 'modules.quotes'
+					, 'modules.submit'
+					, 'modules.taste']
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
+logging.basicConfig(level=logging.INFO)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
 
 async def get_pre(bot, message):
+	# try:
 	if message.guild.id in prefix_cache and message.guild.id is not None:
 		return prefix_cache[message.guild.id]
-
+	# except AttributeError: #this will occur if in a pm where message.guild will be a None Type
+	# 	return "!"
 bot = commands.AutoShardedBot(command_prefix=get_pre,fetch_offline_members=False)
 
 async def stuff(bot): #creating a pool connection to the database for connecctions

@@ -19,7 +19,7 @@ API_KEY=config['keys']['lastfm_key']
 
 API_SECRET=config['client']['lastfm_api_secret']
 
-class taste():
+class tasteCog(commands.Cog):
     def __init__(self,bot):
         self.bot=bot
         self.pool=bot.pool
@@ -27,20 +27,22 @@ class taste():
         self.payload['api_key']=API_KEY
         self.payload['format']='json'
     async def api_request(self, payload):
-        url = 'http://ws.audioscrobbler.com/2.0/'
-        headers = {'user-agent': 'Patrician-Bot/1.0'}
-        conn = aiohttp.TCPConnector()
-        session = aiohttp.ClientSession(connector=conn)
-        async with session.get(url, params=payload, headers=headers) as r:
-            data = await r.json()
-        session.close()
-        return data
-
+        try:
+            url = 'http://ws.audioscrobbler.com/2.0/'
+            headers = {'user-agent': 'Patrician-Bot/1.0'}
+            conn = aiohttp.TCPConnector()
+            session = aiohttp.ClientSession(connector=conn)
+            async with session.get(url, params=payload, headers=headers) as r:
+                data = await r.json()
+            session.close()
+            return data
+        except:
+            raise Exception("Last.fm didn't respond , try again.")
     async def fetch(self,ctx, opt, args): #for requesting top artists
         async with self.bot.pool.acquire() as conn:
             try:
                 if opt is None:
-                    user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', int(ctx.message.author.id))
+                    user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', ctx.message.author.id)
                     msg = "That doesn't seem right , have you submitted your account ? (use `fm set username`)"
                 elif opt == "set":
                     user = args
@@ -58,7 +60,7 @@ class taste():
                 return mess
 
             except:
-                await self.bot.say(msg)
+                await ctx.message.channel.send(msg)
 
     def op(self,artists, user1, user2, name1, name2): #graph generating function
         y = np.arange(len(artists))
@@ -101,7 +103,7 @@ class taste():
 
     @commands.command(pass_context=True)
     async def taste(self, ctx, args):
-        await self.bot.send_typing(ctx.message.channel)
+        await ctx.message.channel.trigger_typing()
         list1 = await self.fetch(ctx, opt=None, args=None)
         try:
             async with self.bot.pool.acquire() as conn:

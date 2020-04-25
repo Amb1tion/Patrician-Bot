@@ -18,7 +18,7 @@ API_SECRET=config['client']['lastfm_api_secret']
 
 
 
-class lastfm():
+class lastfmCog(commands.Cog):
     def __init__(self,bot):
         self.bot=bot
         self.pool=bot.pool
@@ -26,19 +26,22 @@ class lastfm():
         self.payload['api_key']=API_KEY
         self.payload['format']='json'
     async def api_request(self, payload):
-        url = 'http://ws.audioscrobbler.com/2.0/'
-        headers = {'user-agent': 'Patrician-Bot/1.0'}
-        conn = aiohttp.TCPConnector()
-        session = aiohttp.ClientSession(connector=conn)
-        async with session.get(url, params=payload, headers=headers) as r:
-            data = await r.json()
-        session.close()
-        return data
+        try:
+            url = 'http://ws.audioscrobbler.com/2.0/'
+            headers = {'user-agent': 'Patrician-Bot/1.0'}
+            conn = aiohttp.TCPConnector()
+            session = aiohttp.ClientSession(connector=conn)
+            async with session.get(url, params=payload, headers=headers) as r:
+                data = await r.json()
+            session.close()
+            return data
+        except Exception as e:
+            raise Exception("Last.fm didn't respond , try again.")
     async def fetch(self,ctx,opt,args):
         async with self.pool.acquire() as conn:
             try:
                 if opt is None:
-                    user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', int(ctx.message.author.id))
+                    user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', ctx.message.author.id)
                     msg = "That doesn't seem right , have you submitted your account ? (use `fm set username`)"
                 elif opt == "set":
                     user = args
@@ -54,7 +57,7 @@ class lastfm():
                     payload['nowplaying'] = 'true'
                     mess = await self.api_request(payload)
                     var = self.output(ctx, mess, user)
-                    emo = await self.bot.say(embed=var)
+                    emo = await ctx.message.channel.send(embed=var)
                     emojis = ['updoot:245233157916327937', 'downdoot:320678562308816898']
                 # await self.bot.add_reaction(emo, emojis[0])
                 # await self.bot.add_reaction(emo,emojis[1])
@@ -66,12 +69,12 @@ class lastfm():
                     payload['nowplaying'] = 'true'
                     mess = await self.api_request(payload)
                     var = self.output(ctx, mess, user)
-                    emo = await self.bot.say(content="",embed=var)
+                    emo = await ctx.message.channel.send(content="",embed=var)
                     emojis = ['updoot:245233157916327937', 'downdoot:320678562308816898']
                     # await self.bot.add_reaction(emo, emojis[0])
                     # await self.bot.add_reaction(emo,emojis[1])
-            except:
-                await self.bot.say(msg)
+            except Exception as e:
+                await ctx.message.channel.send(e)
 
     def output(self,ctx,mess,user):
         image1=mess['recenttracks']['track'][0]['image'][2]['#text']
@@ -93,37 +96,37 @@ class lastfm():
                           icon_url=image2)
         return embed
 
-    @commands.group(pass_context=True , description = "Shows your currently playing track.")
+    @commands.group(description = "Shows your currently playing track.")
     async def fm(self,ctx):
-        await self.bot.send_typing(ctx.message.channel)
+        await ctx.message.channel.trigger_typing()
         if ctx.invoked_subcommand is None:
             await self.fetch(ctx,opt=None,args=None)
 
-    @fm.command(pass_context=True)
+    @fm.command()
     async def set(self,ctx,args:str):
-        await self.bot.send_typing(ctx.message.channel)
+        await ctx.message.channel.trigger_typing()
         user=args
         await self.fetch(ctx,"set",user)
         async with self.pool.acquire() as conn:
             try:
-                await conn.execute('''INSERT INTO users(userid,lastfm) VALUES($1,$2)''',int(ctx.message.author.id),user)
+                await conn.execute('''INSERT INTO users(userid,lastfm) VALUES($1,$2)''',ctx.message.author.id,user)
             except:
-                await conn.execute('''UPDATE users SET lastfm = $1 WHERE userid = $2''',user,int(ctx.message.author.id))
+                await conn.execute('''UPDATE users SET lastfm = $1 WHERE userid = $2''',user,ctx.message.author.id)
 
 
-    @fm.command(pass_context=True)
+    @fm.command()
     async def get(self,ctx,args):
-        await self.bot.send_typing(ctx.message.channel)
+        await ctx.message.channel.trigger_typing()
         try:
             if ctx.message.mentions[0].id:
                 try:
                     async with self.pool.acquire() as conn:
-                        user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', int(ctx.message.mentions[0].id))
+                        user = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1', ctx.message.mentions[0].id)
                         if user is None:
                             raise Exception('no last.fm')
                     await self.fetch(ctx,"get",user)
                 except:
-                    await self.bot.say('There\'s something wrong here , maybe they don\'t have a last.fm')
+                    await ctx.message.channel.send('There\'s something wrong here , maybe they don\'t have a last.fm')
             else:
                 raise Exception('No member mentioned.')
         except:
@@ -131,4 +134,4 @@ class lastfm():
             await self.fetch(ctx,"get",user)
 
 def setup(bot):
-    bot.add_cog(lastfm(bot))
+    bot.add_cog(lastfmCog(bot))
