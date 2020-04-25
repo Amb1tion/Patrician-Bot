@@ -57,7 +57,7 @@ class lastfmCog(commands.Cog):
                     payload['nowplaying'] = 'true'
                     mess = await self.api_request(payload)
                     var = self.output(ctx, mess, user)
-                    emo = await ctx.message.channel.send(embed=var)
+                    emo = await ctx.send(embed=var)
                     emojis = ['updoot:245233157916327937', 'downdoot:320678562308816898']
                 # await self.bot.add_reaction(emo, emojis[0])
                 # await self.bot.add_reaction(emo,emojis[1])
@@ -69,12 +69,12 @@ class lastfmCog(commands.Cog):
                     payload['nowplaying'] = 'true'
                     mess = await self.api_request(payload)
                     var = self.output(ctx, mess, user)
-                    emo = await ctx.message.channel.send(content="",embed=var)
+                    emo = await ctx.send(content="",embed=var)
                     emojis = ['updoot:245233157916327937', 'downdoot:320678562308816898']
                     # await self.bot.add_reaction(emo, emojis[0])
                     # await self.bot.add_reaction(emo,emojis[1])
             except Exception as e:
-                await ctx.message.channel.send(e)
+                await ctx.send(e)
 
     def output(self,ctx,mess,user):
         image1=mess['recenttracks']['track'][0]['image'][2]['#text']
@@ -126,7 +126,7 @@ class lastfmCog(commands.Cog):
                             raise Exception('no last.fm')
                     await self.fetch(ctx,"get",user)
                 except:
-                    await ctx.message.channel.send('There\'s something wrong here , maybe they don\'t have a last.fm')
+                    await ctx.send('There\'s something wrong here , maybe they don\'t have a last.fm')
             else:
                 raise Exception('No member mentioned.')
         except:

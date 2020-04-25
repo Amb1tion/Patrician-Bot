@@ -16,9 +16,9 @@ class chartsCog(commands.Cog):
 			try:
 				async with self.pool.acquire() as conn:
 					val = await conn.fetchval('SELECT chart FROM users WHERE userid = $1',ctx.message.author.id)
-				await ctx.message.channel.send(val)
+				await ctx.send(val)
 			except:
-				await ctx.message.channel.send('Your chart isn\'t in the database , fix this by doing `!chart submit imagelinkhere`')
+				await ctx.send('Your chart isn\'t in the database , fix this by doing `!chart submit imagelinkhere`')
 	
 	@chart.command(description = 'Use this to submit your chart')
 	async def submit(self,ctx,link:str):
@@ -33,13 +33,13 @@ class chartsCog(commands.Cog):
 						await conn.execute('''INSERT INTO users(userid,chart) VALUES($1,$2)''',ctx.message.author.id,link)
 					except:
 						await conn.execute('''UPDATE users SET chart = $1 WHERE userid = $2''',link,ctx.message.author.id)
-					await ctx.message.channel.send("Your chart has been submitted, you may call it using !chart")
+					await ctx.send("Your chart has been submitted, you may call it using !chart")
 			elif var is None:
-				await ctx.message.channel.send("Invalid Input.")
+				await ctx.send("Invalid Input.")
 
 		except Exception as e:
 			print(e)
-			await ctx.message.channel.send("Invalid Input")
+			await ctx.send("Invalid Input")
 
 
 	
@@ -49,9 +49,9 @@ class chartsCog(commands.Cog):
 		async with self.pool.acquire() as conn:
 			try:
 				val = await conn.fetchval('SELECT chart FROM users WHERE userid = $1',m.id)
-				await ctx.message.channel.send(val)
+				await ctx.send(val)
 			except:
-				await ctx.message.channel.send('Something went wrong , maybe they haven\'t submitted a chart yet?')
+				await ctx.send('Something went wrong , maybe they haven\'t submitted a chart yet?')
 
 def setup(bot):
 	bot.add_cog(chartsCog(bot))

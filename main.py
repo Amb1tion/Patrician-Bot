@@ -11,11 +11,12 @@ startup_extensions = ['modules.youtube'
 					, 'modules.lastfm'
 					, 'modules.quotes'
 					, 'modules.submit'
-					, 'modules.taste']
+					, 'modules.taste'
+					, 'modules.weekly']
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
@@ -71,14 +72,14 @@ async def prefix(ctx, args: str):
 				except:
 					await conn.execute('''UPDATE servers SET prefix = $1 WHERE serverid = $2''', mo.group(0),
 									   int(ctx.message.guild.id))
-			await ctx.message.channel.send('Your prefix has been updated to: ' + mo.group(0))
+			await ctx.send('Your prefix has been updated to: ' + mo.group(0))
 			prefix_cache[int(ctx.message.guild.id)] = mo.group(0)
 		else:
-			await ctx.message.channel.send(
+			await ctx.send(
 				'Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
 	except Exception as e:
 		print(e)
-		await ctx.message.channel.send(
+		await ctx.send(
 			'Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
 
 
@@ -99,9 +100,9 @@ async def on_guild_join(guild):  # message for when it joins a server
 @bot.event
 async def on_command_error(ctx,error):
 	if isinstance(error,commands.errors.MissingRequiredArgument):
-		mess = await ctx.message.channel.send("This command requires an input.")
+		mess = await ctx.send("This command requires an input.")
 	elif isinstance(error,commands.errors.CommandOnCooldown):
-		mess = await ctx.message.channel.send("Slow down.")
+		mess = await ctx.send("Slow down.")
 		await asyncio.sleep(2)
 		await bot.delete_message(mess)
 
@@ -134,23 +135,23 @@ async def disable(ctx, args: str):
 			async with bot.pool.acquire() as conn:
 				await conn.execute('''UPDATE servers SET conditions = $1 WHERE serverid = $2''',
 								   json.dumps(conditions_cache[ctx.message.guild.id]),ctx.message.guild.id)
-			await ctx.message.channel.send(value + ' has been removed from this channel, you may re-enable by using the allow command')
+			await ctx.send(value + ' has been removed from this channel, you may re-enable by using the enable command')
 		elif value not in conditions_cache[ctx.message.guild.id]:
 			conditions_cache[ctx.message.guild.id][value]=[ctx.message.channel.id]
 			print(conditions_cache)
 			async with bot.pool.acquire() as conn:
 				await conn.execute('''UPDATE servers SET conditions =$1 WHERE serverid = $2''',
 							   json.dumps(conditions_cache[ctx.message.guild.id]),ctx.message.guild.id)
-			await ctx.message.channel.send(value + ' has been removed from this channel, you may re-enable by using the allow command')
+			await ctx.send(value + ' has been removed from this channel, you may re-enable by using the allow command')
 		elif value in conditions_cache[ctx.message.guild.id] and ctx.message.channel.id not in conditions_cache[ctx.message.guild.id][value]:
 			conditions_cache[ctx.message.guild.id][value].append(ctx.message.channel.id)
 			async with bot.pool.acquire() as conn:
 				await conn.execute('''UPDATE servers SET conditions =$1 WHERE serverid=$2''',
 								   json.dumps(conditions_cache[ctx.message.guild.id]),ctx.message.guild.id)
-			await ctx.message.channel.send(value + ' has been removed from this channel, you may re-enable by using the allow command')
+			await ctx.send(value + ' has been removed from this channel, you may re-enable by using the allow command')
 
 	else:
-		await ctx.message.channel.send('You can disable the following:\n'+str(things).strip('[]'))
+		await ctx.send('You can disable the following:\n'+str(things).strip('[]'))
 
 @bot.command()
 @commands.has_permissions(manage_guild=True)
@@ -162,11 +163,11 @@ async def enable(ctx,value:str):
 			check.remove(chann)
 			async with bot.pool.acquire() as conn:
 				await conn.execute('''UPDATE servers SET conditions = $1 WHERE serverid = $2''',json.dumps(conditions_cache[ctx.message.guild.id]),ctx.message.guild.id)
-				await ctx.message.channel.send('The following command has been enabled in this channel: ' + value)
+				await ctx.send('The following command has been enabled in this channel: ' + value)
 		else:
-			await ctx.message.channel.send('This command isn\'t disabled in this channel.')
+			await ctx.send('This command isn\'t disabled in this channel.')
 	except (KeyError,TypeError) as e:
-		await ctx.message.channel.send('Something went wrong,you may have tried to enable a command that\'s already enabled.')
+		await ctx.send('Something went wrong,you may have tried to enable a command that\'s already enabled.')
 
 
 ##OWNER COMMANDS
@@ -177,9 +178,9 @@ async def load(ctx,name: str):
 	try:
 		bot.load_extension(name)
 	except (AttributeError, ImportError) as e:
-		await ctx.message.channel.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+		await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
 		return
-	await ctx.message.channel.send("{} loaded.".format(name))
+	await ctx.send("{} loaded.".format(name))
 
 
 @bot.command()
@@ -187,7 +188,7 @@ async def load(ctx,name: str):
 async def unload(ctx,name: str):
 	"""Removes an extension"""
 	bot.unload_extension(name)
-	await ctx.message.channel.send('Unloaded: ' + name)
+	await ctx.send('Unloaded: ' + name)
 
 
 @bot.command()
@@ -197,9 +198,9 @@ async def reload(ctx,name: str):
 	try:
 		bot.unload_extension(name)
 		bot.load_extension(name)
-		await ctx.message.channel.send('Extension has been reloaded')
+		await ctx.send('Extension has been reloaded')
 	except Exception as e:
-		await ctx.message.channel.send('Something went horribly wrong: ' + str(e))
+		await ctx.send('Something went horribly wrong: ' + str(e))
 
 
 ##loading extensions on startup

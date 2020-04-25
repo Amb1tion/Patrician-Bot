@@ -16,17 +16,17 @@ class generalCog(commands.Cog):
 	@commands.command()
 	async def joindate(self,ctx,member=None):
 		if member is not None:
-			await ctx.message.channel.send("{0.name} joined in {0.joined_at}".format(ctx.message.mentions[0]))
+			await ctx.send("{0.name} joined in {0.joined_at}".format(ctx.message.mentions[0]))
 		else:
-			await ctx.message.channel.send("{0.name} joined in {0.joined_at}".format(ctx.message.author))
+			await ctx.send("{0.name} joined in {0.joined_at}".format(ctx.message.author))
 
 	@commands.command()
 	async def choose(self,*choices:str):
 		#rewrite this to have an array where the input string goes then split it with multiple choice for characters to split on
 		if len(choices) < 2:
-			return await ctx.message.channel.send("weren't choices between *multiple* things ??")
+			return await ctx.send("weren't choices between *multiple* things ??")
 		else:
-			return await ctx.message.channel.send(random.choice(choices))
+			return await ctx.send(random.choice(choices))
 	
 	@commands.command(pass_context=True)
 	@commands.check(server_check)

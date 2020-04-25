@@ -17,7 +17,7 @@ class quotesCog(commands.Cog):
             except Exception as e:
                 print(e)
             if chrysalis is None:
-                err = await ctx.message.channel.send('This server hasn\'t added any quotes yet.')
+                err = await ctx.send('This server hasn\'t added any quotes yet.')
                 await asyncio.sleep(3)
                 await ctx.message.delete()
                 await err.delete()
@@ -26,9 +26,9 @@ class quotesCog(commands.Cog):
                 dict = json.loads(chrysalis)
                 print(dict)
                 if index in dict:
-                    await ctx.message.channel.send('Here\'s your philosophical gem {}'.format(dict[index]))
+                    await ctx.send('Here\'s your philosophical gem {}'.format(dict[index]))
                 elif index not in dict and index is not None:
-                    err = await ctx.message.channel.send('a Quote with that index is not in the database')
+                    err = await ctx.send('a Quote with that index is not in the database')
                     await asyncio.sleep(3)
                     await err.delete()
                     await ctx.message.delete()
@@ -36,14 +36,14 @@ class quotesCog(commands.Cog):
                 elif index is None:
                     print('is it here ?')
                     pick = random.choice(list(dict.keys()))
-                    await ctx.message.channel.send('Here\'s one straight from the most brilliant minds this server has to offer: {}  \nvalue: {} '.format(dict[pick],pick))
+                    await ctx.send('Here\'s one straight from the most brilliant minds this server has to offer: {}  \nvalue: {} '.format(dict[pick],pick))
 
     @quote.command()
     async def latest(self , ctx):
         async with self.pool.acquire() as conn:
             chrysalis = await conn.fetchval('SELECT quotes FROM servers WHERE serverid = $1',ctx.message.guild.id)
             if chrysalis is None:
-                err = await ctx.message.channel.send('This server hasn\'t stored any quotes yet.')
+                err = await ctx.send('This server hasn\'t stored any quotes yet.')
                 await asyncio.sleep(5)
                 await err.delete()
                 await ctx.message.delete()
@@ -51,7 +51,7 @@ class quotesCog(commands.Cog):
                 dict = json.loads(chrysalis)
                 print(dict)
                 num = await conn.fetchval('SELECT quote_num FROM servers WHERE serverid = $1',ctx.message.guild.id)
-                await ctx.message.channel.send("Here's the latest of what the bright minds of this server have to offer: {} \nvalue: {}".format(dict[str(num-1)],str(num-1)))
+                await ctx.send("Here's the latest of what the bright minds of this server have to offer: {} \nvalue: {}".format(dict[str(num-1)],str(num-1)))
 
     @quote.command()
     @commands.has_permissions(manage_messages=True)
@@ -65,15 +65,15 @@ class quotesCog(commands.Cog):
             chrysalis = await conn.fetchval('SELECT quotes FROM servers WHERE serverid=$1',ctx.message.guild.id)
             num = await conn.fetchval('SELECT quote_num FROM servers WHERE serverid=$1',ctx.message.guild.id)
             if chrysalis is None:
-                await ctx.message.channel.send('This server hasn\'t stored any quotes yet')
+                await ctx.send('This server hasn\'t stored any quotes yet')
             else:
                 try:
                     dict = json.loads(chrysalis)
                     if isinstance(index,int) and index in range(0 , num):
-                        await ctx.message.channel.send("Are you sure you want to delete(y/n): {}".format(dict[str(index)]))
+                        await ctx.send("Are you sure you want to delete(y/n): {}".format(dict[str(index)]))
                         answer = await self.bot.wait_for('message',timeout=10.0, check=check)
                         if answer is None:
-                            await ctx.message.channel.send('Operation timed out, make up your mind faster.')
+                            await ctx.send('Operation timed out, make up your mind faster.')
                         else:
                             print('a')
                             dict.pop(str(index))
@@ -84,9 +84,9 @@ class quotesCog(commands.Cog):
                             await conn.execute('UPDATE servers SET quotes = $1 WHERE serverid = $2', json.dumps(dict),
                                                ctx.message.guild.id)
                             await conn.execute('UPDATE servers SET quote_num=$1 WHERE serverid= $2', num-1,ctx.message.guild.id)
-                            await ctx.message.channel.send("Quote deleted.")
+                            await ctx.send("Quote deleted.")
                     else:
-                        await ctx.message.channel.send("Index invalid or out of range.")
+                        await ctx.send("Index invalid or out of range.")
                 except Exception as e:
                     print(e)
 
@@ -130,17 +130,17 @@ class quotesCog(commands.Cog):
                                                ctx.message.guild.id)
                         await conn.execute('UPDATE servers SET quotes = $1 WHERE serverid = $2', json.dumps(dict),
                                            ctx.message.guild.id)
-                        conf = await ctx.message.channel.send(
+                        conf = await ctx.send(
                             'Your meme...err i meant deep philosophical quote has been added with the assigned value of {} (which you can use to call it with `prefix quote value`)'.format(
                                 str(val)))
                     else:
-                        err = await ctx.message.channel.send('This link is already in the database you reposter.')
+                        err = await ctx.send('This link is already in the database you reposter.')
             elif var is None:
                 err = await ctx.messge.channel.send('That\'s an invalid quote link')
 
         except Exception as e:
             print(e)
-            err = await ctx.message.channel.send('You\'re supposed to give me an image link to your meme...err quote')
+            err = await ctx.send('You\'re supposed to give me an image link to your meme...err quote')
 
 
 

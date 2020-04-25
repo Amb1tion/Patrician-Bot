@@ -18,9 +18,9 @@ class rymCog(commands.Cog):
 				try:
 					user = await conn.fetchval('SELECT rym FROM users WHERE userid=$1',ctx.message.author.id)
 					link = "https://rateyourmusic.com/~"+user
-					await ctx.message.channel.send("Here is your well maintained and organized account! "+link)
+					await ctx.send("Here is your well maintained and organized account! "+link)
 				except:
-					await self.ctx.message.channel.send("Huh? i couldn't find your account try submitting it with `rym set username`")
+					await ctx.send("Huh? i couldn't find your account try submitting it with `rym set username`")
 
  
 
@@ -36,11 +36,11 @@ class rymCog(commands.Cog):
 
 				except:
 					await conn.execute('''UPDATE users SET rym = $1 WHERE userid = $2''',args,int(ctx.message.author.id))
-				await self.ctx.message.channel.send("Your account has been submitted!")
+				await ctx.send("Your account has been submitted!")
 
 
 		else:
-			await self.ctx.message.channel.send('That does not look like a valid username to me.')
+			await ctx.send('That does not look like a valid username to me.')
 
 	@rym.command(pass_context=True)
 
@@ -49,9 +49,9 @@ class rymCog(commands.Cog):
 			async with self.pool.acquire() as conn:
 				user = await conn.fetchval('SELECT rym FROM users WHERE userid = $1',int(ctx.message.mentions[0].id))
 				link = "https://rateyourmusic.com/~" + user
-				await self.ctx.message.channel.send("Here's the account: "+link)
+				await ctx.send("Here's the account: "+link)
 		except:
-			await self.ctx.message.channel.send("Something went wrong, maybe they don't have a rym.")
+			await ctx.send("Something went wrong, maybe they don't have a rym.")
 
 
 

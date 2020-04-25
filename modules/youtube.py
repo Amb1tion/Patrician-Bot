@@ -27,9 +27,9 @@ class YoutubeCog(commands.Cog):
                 async with session.get("https://www.googleapis.com/youtube/v3/search?",params=payload) as r:
                     data = await r.json()
                     link = "https://www.youtube.com/watch?v={}".format(data['items'][0]['id']['videoId'])
-                    await ctx.message.channel.send(link)
+                    await ctx.send(link)
         except Exception as E:
-            await ctx.message.channel.send(E)
+            await ctx.send(E)
 
 
 

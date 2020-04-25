@@ -60,7 +60,7 @@ class tasteCog(commands.Cog):
                 return mess
 
             except Exception as E:
-                await ctx.message.channel.send(E)
+                await ctx.send(E)
 
     def op(self,artists, user1, user2, name1, name2): #graph generating function
         y = np.arange(len(artists))
@@ -110,7 +110,7 @@ class tasteCog(commands.Cog):
                 user_name1 = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1',
                                                  ctx.message.author.id)
         except:
-            await ctx.message.channel.send("Have you set your last.fm username ? (`!fm set username`)")
+            await ctx.send("Have you set your last.fm username ? (`!fm set username`)")
         try:
             if ctx.message.mentions[0].id:
 
@@ -125,7 +125,7 @@ class tasteCog(commands.Cog):
 
                 except Exception as e:
                     print(e)
-                    await ctx.message.channel.send('There\'s something wrong here , maybe they don\'t have a last.fm')
+                    await ctx.send('There\'s something wrong here , maybe they don\'t have a last.fm')
             else:
                 raise Exception('No member mentioned.')
         except:
@@ -144,7 +144,7 @@ class tasteCog(commands.Cog):
         if result is not None:
             final = sorted(result.items(), key=lambda foo: foo[1][2], reverse=True) #sorting by the weights
         else:
-            ctx.message.channel.send("You have no common artists with this user.")
+            ctx.send("You have no common artists with this user.")
             
         artists = []
         user1 = []
@@ -157,7 +157,7 @@ class tasteCog(commands.Cog):
             except:
                 break
         image =await self.execute(artists, user1, user2, user_name1, user_name2)
-        await ctx.message.channel.send(file=discord.File(fp=image,filename="{}.png".format(user_name1)))
+        await ctx.send(file=discord.File(fp=image,filename="{}.png".format(user_name1)))
 
 def setup(bot):
 	bot.add_cog(tasteCog(bot))

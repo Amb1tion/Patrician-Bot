@@ -16,10 +16,10 @@ class countdownCog(commands.Cog):
             secondint = secondint - 1
 
             if secondint == 0:
-                await ctx.message.channel.send("```Start!```")
+                await ctx.send("```Start!```")
                 break
             else:
-                message = await ctx.message.channel.send("```css" + "\n" + "[" + title +"]" + "\nTimer: " + str(secondint) + "```")
+                message = await ctx.send("```css" + "\n" + "[" + title +"]" + "\nTimer: " + str(secondint) + "```")
             await asyncio.sleep(1)
             await message.delete(delay=2)
 
@@ -29,10 +29,10 @@ class countdownCog(commands.Cog):
         role = discord.utils.get(ctx.message.server.roles,name='Listening Party')
         if role not in ctx.message.author.roles:
             await ctx.message.author.add_roles(role)
-            await ctx.message.channel.send("You've been given the Listening Party role and will be pinged when community LPs happen.")
+            await ctx.send("You've been given the Listening Party role and will be pinged when community LPs happen.")
         else:
             await ctx.message.author.remove_roles(role)
-            await ctx.message.channel.send("Role has been removed , you will no longer be pinged for community LPs.")
+            await ctx.send("Role has been removed , you will no longer be pinged for community LPs.")
 
 def setup(bot):
     bot.add_cog(countdownCog(bot))
