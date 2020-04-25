@@ -15,7 +15,7 @@ startup_extensions = ['modules.youtube'
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370

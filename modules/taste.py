@@ -36,8 +36,8 @@ class tasteCog(commands.Cog):
                 data = await r.json()
             session.close()
             return data
-        except:
-            raise Exception("Last.fm didn't respond , try again.")
+        except Exception as E:
+            raise Exception(E)
     async def fetch(self,ctx, opt, args): #for requesting top artists
         async with self.bot.pool.acquire() as conn:
             try:
@@ -59,8 +59,8 @@ class tasteCog(commands.Cog):
                 mess = await self.api_request(payload)
                 return mess
 
-            except:
-                await ctx.message.channel.send(msg)
+            except Exception as E:
+                await ctx.message.channel.send(E)
 
     def op(self,artists, user1, user2, name1, name2): #graph generating function
         y = np.arange(len(artists))
@@ -101,31 +101,31 @@ class tasteCog(commands.Cog):
         some_stuff = await self.bot.loop.run_in_executor(None, thing)
         return some_stuff
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def taste(self, ctx, args):
         await ctx.message.channel.trigger_typing()
         list1 = await self.fetch(ctx, opt=None, args=None)
         try:
             async with self.bot.pool.acquire() as conn:
                 user_name1 = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1',
-                                                 int(ctx.message.author.id))
+                                                 ctx.message.author.id)
         except:
-            await self.bot.say("Have you set your last.fm username ? (`!fm set username`)")
+            await ctx.message.channel.send("Have you set your last.fm username ? (`!fm set username`)")
         try:
             if ctx.message.mentions[0].id:
 
                 try:
                     async with self.bot.pool.acquire() as conn:
                         user_name2 = await conn.fetchval('SELECT lastfm FROM users WHERE userid = $1',
-                                                         int(ctx.message.mentions[0].id))
+                                                         ctx.message.mentions[0].id)
 
                         if user_name2 is None:
-                            raise Exception('no last.fm')
+                            raise Exception('no Last.fm')
                     list2 = await self.fetch(ctx, "get", user_name2)
 
                 except Exception as e:
                     print(e)
-                    await self.bot.say('There\'s something wrong here , maybe they don\'t have a last.fm')
+                    await ctx.message.channel.send('There\'s something wrong here , maybe they don\'t have a last.fm')
             else:
                 raise Exception('No member mentioned.')
         except:
@@ -144,8 +144,8 @@ class tasteCog(commands.Cog):
         if result is not None:
             final = sorted(result.items(), key=lambda foo: foo[1][2], reverse=True) #sorting by the weights
         else:
-            self.bot.say("You have no common artists with this user.")
-            raise Exception("No Common Artists")
+            ctx.message.channel.send("You have no common artists with this user.")
+            
         artists = []
         user1 = []
         user2 = []
@@ -157,7 +157,7 @@ class tasteCog(commands.Cog):
             except:
                 break
         image =await self.execute(artists, user1, user2, user_name1, user_name2)
-        await self.bot.send_file(ctx.message.channel,fp=image,filename="{}.png".format(user_name1))
+        await ctx.message.channel.send(file=discord.File(fp=image,filename="{}.png".format(user_name1)))
 
 def setup(bot):
-	bot.add_cog(taste(bot))
+	bot.add_cog(tasteCog(bot))
