@@ -36,7 +36,7 @@ class weekly(commands.Cog):
 			except:
 				await ctx.send('You have to submit your account using `!fm set usernamehere`')
 
-		link="http://tapmusic.net/collage.php?user=amb1tion&type=7day&size=3x3&caption=true"
+		link="http://tapmusic.net/collage.php?user="+user+"&type=7day&size="+size+"&caption=true"
 
 		async with aiohttp.ClientSession() as session:
 				async with session.get(link) as resp:
