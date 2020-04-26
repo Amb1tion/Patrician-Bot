@@ -18,7 +18,7 @@ API_SECRET=config['client']['lastfm_api_secret']
 
 
 
-class lastfmCog(commands.Cog):
+class lastfm(commands.Cog):
     def __init__(self,bot):
         self.bot=bot
         self.pool=bot.pool
@@ -134,4 +134,4 @@ class lastfmCog(commands.Cog):
             await self.fetch(ctx,"get",user)
 
 def setup(bot):
-    bot.add_cog(lastfmCog(bot))
+    bot.add_cog(lastfm(bot))

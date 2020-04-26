@@ -3,9 +3,9 @@ from discord.ext import commands
 
 #channel id 587466715407843328 , server id = 448081955221798923
 def server_check(ctx):
-	return ctx.message.guild.id == 205630530237104128
+	return ctx.message.guild.id == 448081955221798923
 
-class submitCog(commands.Cog):
+class submit(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 
@@ -29,7 +29,7 @@ class submitCog(commands.Cog):
 			if thing is not None:
 				if thing.approximate_member_count > 30:
 					say = "Sent by <@" + str(ctx.message.author.id) +">"
-					channel = self.bot.get_channel(247813557838807041)
+					channel = self.bot.get_channel(587466715407843328)
 					await channel.send(reply.content)
 					await channel.send(say)
 					await ctx.message.author.send(confirm)
@@ -41,4 +41,4 @@ class submitCog(commands.Cog):
 				
 		
 def setup(bot):
-	bot.add_cog(submitCog(bot))
+	bot.add_cog(submit(bot))

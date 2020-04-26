@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import BucketType
 
 
-class quotesCog(commands.Cog):
+class quotes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.pool = bot.pool
@@ -146,4 +146,4 @@ class quotesCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(quotesCog(bot))
+    bot.add_cog(quotes(bot))

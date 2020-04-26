@@ -4,7 +4,7 @@ from discord.ext.commands import BucketType
 
 
 
-class chartsCog(commands.Cog):
+class charts(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 		self.pool=bot.pool
@@ -54,4 +54,4 @@ class chartsCog(commands.Cog):
 				await ctx.send('Something went wrong , maybe they haven\'t submitted a chart yet?')
 
 def setup(bot):
-	bot.add_cog(chartsCog(bot))
+	bot.add_cog(charts(bot))

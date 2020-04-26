@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 import asyncio
 def servercheck(ctx):
-    return ctx.message.server.id == 198621771451072512
+    return ctx.message.guild.id == 198621771451072512
 
-class countdownCog(commands.Cog):
+class countdown(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -26,7 +26,7 @@ class countdownCog(commands.Cog):
     @commands.command()
     @commands.check(servercheck)
     async def lp(self,ctx):
-        role = discord.utils.get(ctx.message.server.roles,name='Listening Party')
+        role = discord.utils.get(ctx.message.guild.roles,name='Listening Party')
         if role not in ctx.message.author.roles:
             await ctx.message.author.add_roles(role)
             await ctx.send("You've been given the Listening Party role and will be pinged when community LPs happen.")
@@ -35,4 +35,4 @@ class countdownCog(commands.Cog):
             await ctx.send("Role has been removed , you will no longer be pinged for community LPs.")
 
 def setup(bot):
-    bot.add_cog(countdownCog(bot))
+    bot.add_cog(countdown(bot))

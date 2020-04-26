@@ -5,7 +5,7 @@ from discord.ext.commands import BucketType
 
 
 
-class rymCog(commands.Cog):
+class rym(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 		self.pool=bot.pool
@@ -56,4 +56,4 @@ class rymCog(commands.Cog):
 
 
 def setup(bot):
-	bot.add_cog(rymCog(bot))
+	bot.add_cog(rym(bot))

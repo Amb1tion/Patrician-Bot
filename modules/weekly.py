@@ -2,7 +2,7 @@ import discord,re,aiohttp,async_timeout,io,asyncpg
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
-class weeklyCog(commands.Cog):
+class weekly(commands.Cog):
 	def __init__(self,bot):
 		self.bot = bot
 		self.pool=bot.pool
@@ -14,7 +14,7 @@ class weeklyCog(commands.Cog):
 		try:
 			mo=Regex.search(args)
 			if mo is None:
-				await ctx.message.channel.send('You\'re passing invalid args, do `prefix weekly username [3x3,4x4,5x5,2x6] or `prefix weekly` if you have your last.fm username set')
+				await ctx.send('You\'re passing invalid args, do `prefix weekly username [3x3,4x4,5x5,2x6] or `prefix weekly` if you have your last.fm username set')
 			if mo.group(1):
 				user = mo.group(1)
 			else:
@@ -24,7 +24,7 @@ class weeklyCog(commands.Cog):
 			if mo.group(2) in ['3x3','4x4','5x5','2x6']:
 				size=mo.group(2)
 			else:
-				await ctx.message.channel.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
+				await ctx.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
 		except TypeError:
 			try:
 				async with self.pool.acquire() as conn:
@@ -34,7 +34,7 @@ class weeklyCog(commands.Cog):
 				else:
 					size ='3x3'
 			except:
-				await ctx.message.channel.send('You have to submit your account using `!fm set usernamehere`')
+				await ctx.send('You have to submit your account using `!fm set usernamehere`')
 
 		link="http://tapmusic.net/collage.php?user=amb1tion&type=7day&size=3x3&caption=true"
 
@@ -42,7 +42,7 @@ class weeklyCog(commands.Cog):
 				async with session.get(link) as resp:
 					var = await resp.read()
 					f = io.BytesIO(var)	
-		await ctx.send(file=discord.File(filename='image.png',fp=f),content=content=ctx.message.author.mention + ' here\'s your chart')
+		await ctx.send(file=discord.File(filename='image.png',fp=f),content=ctx.message.author.mention + ' here\'s your chart')
 
 	@commands.command()
 
@@ -52,7 +52,7 @@ class weeklyCog(commands.Cog):
 		try:
 			mo = Regex.search(args)
 			if mo is None:
-				await ctx.message.channel.send(
+				await ctx.send(
 					'You\'re passing invalid args, do `prefix weekly username [3x3,4x4,5x5,2x6] or `prefix weekly` if you have your last.fm username set')
 			if mo.group(1):
 				user = mo.group(1)
@@ -63,7 +63,7 @@ class weeklyCog(commands.Cog):
 			if mo.group(2) in ['3x3', '4x4', '5x5', '2x6']:
 				size = mo.group(2)
 			else:
-				await ctx.message.channel.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
+				await ctx.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
 		except TypeError:
 			try:
 				async with self.pool.acquire() as conn:
@@ -74,14 +74,14 @@ class weeklyCog(commands.Cog):
 					size='3x3'
 
 			except:
-				await ctx.message.channel.send('You have to submit your patrician account using `!fm set usernamehere`')
+				await ctx.send('You have to submit your patrician account using `!fm set usernamehere`')
 		link = "http://tapmusic.net/collage.php?user=" + user + "&type=1month&size=" + size + "&caption=true"
 
 		async with aiohttp.ClientSession() as session:
 				async with session.get(link) as resp:
 					var = await resp.read()
 					f = io.BytesIO(var)	
-		await ctx.send(file=discord.File(filename='image.png',fp=f),content=content=ctx.message.author.mention + ' here\'s your chart')
+		await ctx.send(file=discord.File(filename='image.png',fp=f),content=ctx.message.author.mention + ' here\'s your chart')
 
 	@commands.command()
 
@@ -91,7 +91,7 @@ class weeklyCog(commands.Cog):
 		try:
 			mo = Regex.search(args)
 			if mo is None:
-				await ctx.message.channel.send(
+				await ctx.send(
 					'You\'re passing invalid args, do `prefix weekly username [3x3,4x4,5x5,2x6] or `prefix weekly` if you have your last.fm username set')
 			if mo.group(1):
 				user = mo.group(1)
@@ -102,7 +102,7 @@ class weeklyCog(commands.Cog):
 			if mo.group(2) in ['3x3', '4x4', '5x5', '2x6']:
 				size = mo.group(2)
 			else:
-				await ctx.message.channel.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
+				await ctx.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
 		except TypeError:
 			try:
 				async with self.pool.acquire() as conn:
@@ -113,15 +113,14 @@ class weeklyCog(commands.Cog):
 					size='3x3'
 
 			except:
-				await ctx.message.channel.send('You have to submit your patrician account using `!fm set usernamehere`')
+				await ctx.send('You have to submit your patrician account using `!fm set usernamehere`')
 		link = "http://tapmusic.net/collage.php?user=" + user + "&type=12month&size=" + size + "&caption=true"
 
 		async with aiohttp.ClientSession() as session:
 				async with session.get(link) as resp:
 					var = await resp.read()
 					f = io.BytesIO(var)	
-		await ctx.send(file=discord.File(filename='image.png',fp=f),content=content=ctx.message.author.mention + ' here\'s your chart')
-
+		await ctx.send(file=discord.File(filename='image.png',fp=f),content=ctx.message.author.mention + ' here\'s your chart')
 	@commands.command()
 
 	async def alltime(self, ctx, *, args=None):
@@ -130,7 +129,7 @@ class weeklyCog(commands.Cog):
 		try:
 			mo = Regex.search(args)
 			if mo is None:
-				await ctx.message.channel.send(
+				await ctx.send(
 					'You\'re passing invalid args, do `prefix weekly username [3x3,4x4,5x5,2x6] or `prefix weekly` if you have your last.fm username set')
 			if mo.group(1):
 				user = mo.group(1)
@@ -142,7 +141,7 @@ class weeklyCog(commands.Cog):
 
 				size = mo.group(2)
 			else:
-				await ctx.message.channel.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
+				await ctx.send('That\'s an invalid format, try one of these (3x3,4x4,5x5,2x6)')
 		except TypeError:
 			try:
 				async with self.pool.acquire() as conn:
@@ -153,14 +152,14 @@ class weeklyCog(commands.Cog):
 					size='3x3'
 
 			except:
-				await ctx.message.channel.send('You have to submit your patrician account using `!fm set usernamehere`')
+				await ctx.send('You have to submit your patrician account using `!fm set usernamehere`')
 		link = "http://tapmusic.net/collage.php?user=" + user + "&type=overall&size=" + size + "&caption=true"
 
 		async with aiohttp.ClientSession() as session:
 				async with session.get(link) as resp:
 					var = await resp.read()
 					f = io.BytesIO(var)	
-		await ctx.send(file=discord.File(filename='image.png',fp=f),content=content=ctx.message.author.mention + ' here\'s your chart')
+		await ctx.send(file=discord.File(filename='image.png',fp=f),content=ctx.message.author.mention + ' here\'s your chart')
 
 def setup(bot):
-	bot.add_cog(weeklyCog(bot))
+	bot.add_cog(weekly(bot))

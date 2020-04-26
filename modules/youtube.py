@@ -6,7 +6,7 @@ config.read('bot_config.ini')
 API_KEY = config['keys']['youtube_key']
 
 
-class YoutubeCog(commands.Cog):
+class Youtube(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.payload = {} #defining dict to use for paramater passing
@@ -34,5 +34,5 @@ class YoutubeCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(YoutubeCog(bot))
+    bot.add_cog(Youtube(bot))
 

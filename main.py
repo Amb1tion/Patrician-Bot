@@ -16,7 +16,7 @@ startup_extensions = ['modules.youtube'
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
@@ -68,12 +68,12 @@ async def prefix(ctx, args: str):
 			async with bot.pool.acquire() as conn:
 				try:
 					await conn.execute('''INSERT INTO servers(serverid,prefix) VALUES($1,$2)''',
-									   int(ctx.message.guild.id), mo.group(0))
+									   ctx.message.guild.id, mo.group(0))
 				except:
 					await conn.execute('''UPDATE servers SET prefix = $1 WHERE serverid = $2''', mo.group(0),
-									   int(ctx.message.guild.id))
+									   ctx.message.guild.id)
 			await ctx.send('Your prefix has been updated to: ' + mo.group(0))
-			prefix_cache[int(ctx.message.guild.id)] = mo.group(0)
+			prefix_cache[ctx.message.guild.id] = mo.group(0)
 		else:
 			await ctx.send(
 				'Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
@@ -93,7 +93,7 @@ async def on_guild_join(guild):  # message for when it joins a server
 
 		except asyncpg.exceptions.UniqueViolationError:
 			await conn.execute('''UPDATE servers SET prefix = $1 WHERE serverid = $2''','!',guild.id)
-		prefix_cache[int(guild.id)]='!'
+		prefix_cache[guild.id]='!'
 	await guild.default_channel.send(greeting)
 
 

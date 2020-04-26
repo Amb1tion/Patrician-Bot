@@ -19,7 +19,7 @@ API_KEY=config['keys']['lastfm_key']
 
 API_SECRET=config['client']['lastfm_api_secret']
 
-class tasteCog(commands.Cog):
+class taste(commands.Cog):
     def __init__(self,bot):
         self.bot=bot
         self.pool=bot.pool
@@ -160,4 +160,4 @@ class tasteCog(commands.Cog):
         await ctx.send(file=discord.File(fp=image,filename="{}.png".format(user_name1)))
 
 def setup(bot):
-	bot.add_cog(tasteCog(bot))
+	bot.add_cog(taste(bot))

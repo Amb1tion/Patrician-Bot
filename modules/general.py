@@ -7,9 +7,9 @@ import discord.utils
 def testing_check(ctx):
 	return ctx.message.channel.id == 198702690191147009
 def server_check(ctx):
-	return ctx.message.server.id == 198621771451072512
+	return ctx.message.guild.id == 198621771451072512
 
-class generalCog(commands.Cog):
+class general(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
 
@@ -31,7 +31,7 @@ class generalCog(commands.Cog):
 	@commands.command(pass_context=True)
 	@commands.check(server_check)
 	async def brave(self,ctx):
-		role = discord.utils.get(ctx.message.server.roles,name='brave soul')
+		role = discord.utils.get(ctx.message.guild.roles,name='brave soul')
 		if role not in ctx.message.author.roles:
 			await ctx.message.author.add_roles(role)
 			await self.bot.say('I don\'t know why you\'d want to go to that hive of scum and villainy.... but take the role you masochist..')
@@ -40,4 +40,4 @@ class generalCog(commands.Cog):
 			await ctx.message.author.remove_roles(role)
 
 def setup(bot):
-	bot.add_cog(generalCog(bot))
+	bot.add_cog(general(bot))
