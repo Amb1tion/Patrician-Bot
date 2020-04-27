@@ -21,7 +21,7 @@ class general(commands.Cog):
 			await ctx.send("{0.name} joined in {0.joined_at}".format(ctx.message.author))
 
 	@commands.command()
-	async def choose(self,*choices:str):
+	async def choose(self,ctx,*choices:str):
 		#rewrite this to have an array where the input string goes then split it with multiple choice for characters to split on
 		if len(choices) < 2:
 			return await ctx.send("weren't choices between *multiple* things ??")
