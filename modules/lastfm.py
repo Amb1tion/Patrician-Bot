@@ -79,14 +79,21 @@ class lastfm(commands.Cog):
     def output(self,ctx,mess,user):
         image1=mess['recenttracks']['track'][0]['image'][2]['#text']
         image2=mess['recenttracks']['track'][1]['image'][2]['#text']
+        trackname1=mess['recenttracks']['track'][0]['name']
+        albumname1="["+mess['recenttracks']['track'][0]['album']['#text']+"]"
+        artist1=mess['recenttracks']['track'][0]['artist']['#text']
+        temp=artist1+" "+albumname1+" "+ "rym"
+        term=temp.replace(" ","%20")
+        albumlink="https://www.google.com/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&gfns=1&q="+term
+        hyperlink = albumname1+"("+albumlink+")"
         if image1 is "":
             image1 = "https://i.imgur.com/ZneU91v.jpg"
         if image2 is "":
             image2="https://i.imgur.com/ZneU91v.jpg"
-        embed = discord.Embed(title=mess['recenttracks']['track'][0]['artist']['#text'],
+        embed = discord.Embed(title=artist1,
                               colour=discord.Colour(0xbe6cf8),
                               url=mess['recenttracks']['track'][0]['url'],
-                              description=mess['recenttracks']['track'][0]['name']+" ["+ mess['recenttracks']['track'][0]['album']['#text']+"]")
+                              description=trackname1+" ["+ hyperlink+"]")
 
         embed.set_thumbnail(url=image1)
         embed.set_author(name=user
