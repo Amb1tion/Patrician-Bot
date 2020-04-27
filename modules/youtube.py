@@ -6,7 +6,7 @@ config.read('bot_config.ini')
 API_KEY = config['keys']['youtube_key']
 
 
-class Youtube(commands.Cog):
+class YoutubeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.payload = {} #defining dict to use for paramater passing
@@ -27,12 +27,11 @@ class Youtube(commands.Cog):
                 async with session.get("https://www.googleapis.com/youtube/v3/search?",params=payload) as r:
                     data = await r.json()
                     link = "https://www.youtube.com/watch?v={}".format(data['items'][0]['id']['videoId'])
-                    await ctx.send(link)
+                    await ctx.message.channel.send(link)
         except Exception as E:
-            await ctx.send(E)
+            await ctx.message.channel.send(E)
 
 
 
 def setup(bot):
-    bot.add_cog(Youtube(bot))
-
+    bot.add_cog(YoutubeCog(bot))

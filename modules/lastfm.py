@@ -80,12 +80,14 @@ class lastfm(commands.Cog):
         image1=mess['recenttracks']['track'][0]['image'][2]['#text']
         image2=mess['recenttracks']['track'][1]['image'][2]['#text']
         trackname1=mess['recenttracks']['track'][0]['name']
-        albumname1="["+mess['recenttracks']['track'][0]['album']['#text']+"]"
+        albumname1=mess['recenttracks']['track'][0]['album']['#text']
         artist1=mess['recenttracks']['track'][0]['artist']['#text']
-        temp=artist1+" "+albumname1+" "+ "rym"
+        temp=albumname1+" by "+artist1
         term=temp.replace(" ","%20")
-        albumlink="https://www.google.com/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&gfns=1&q="+term
-        hyperlink = albumname1+"("+albumlink+")"
+        albumlink="https://duckduckgo.com/?q=%5Csite%3Arateyourmusic.com+<"+term+">"
+        var= albumlink.replace("(","%28") #this is a hack to fix a mobile embed rendering bug where paranthesis in the link caused the hyperlink to break
+        var1=var.replace(")","%29")# %28 %29 are url encodes for paranthesis https://www.w3schools.com/tags/ref_urlencode.asp
+        hyperlink = "["+albumname1+"]"+"("+var1+")"
         if image1 is "":
             image1 = "https://i.imgur.com/ZneU91v.jpg"
         if image2 is "":
