@@ -99,7 +99,7 @@ class lastfm(commands.Cog):
 
         embed.set_thumbnail(url=image1)
         embed.set_author(name=user
-                         , url="https://www.last.fm/"+user,
+                         , url="https://www.last.fm/user/"+user,
                          icon_url=ctx.message.author.avatar_url)
         embed.set_footer(text="Previous: "+mess['recenttracks']['track'][1]['artist']['#text']+" - "+mess['recenttracks']['track'][1]['name'],
                           icon_url=image2)
