@@ -22,14 +22,13 @@ class Youtube(commands.Cog):
         payload['q']=search
         payload['maxResults']=1
         payload['type']='video'
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get("https://www.googleapis.com/youtube/v3/search?",params=payload) as r:
-                    data = await r.json()
-                    link = "https://www.youtube.com/watch?v={}".format(data['items'][0]['id']['videoId'])
-                    await ctx.send(link)
-        except Exception as E:
-            await ctx.send(E)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://www.googleapis.com/youtube/v3/search?",params=payload) as r:
+                data = await r.json()
+                link = "https://www.youtube.com/watch?v={}".format(data['items'][0]['id']['videoId'])
+                await ctx.send(data)
+
 
 
 

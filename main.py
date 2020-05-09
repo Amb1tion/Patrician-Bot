@@ -16,7 +16,7 @@ startup_extensions = ['modules.youtube'
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
@@ -75,10 +75,8 @@ async def prefix(ctx, args: str):
 			await ctx.send('Your prefix has been updated to: ' + mo.group(0))
 			prefix_cache[ctx.message.guild.id] = mo.group(0)
 		else:
-			await ctx.send(
-				'Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
+			await ctx.send('Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
 	except Exception as e:
-		print(e)
 		await ctx.send(
 			'Invalid args , you can set anything from these \n```$!@#$%^&*()_-=+./,\|?`~``` \n You may also use any two value combination of these')
 

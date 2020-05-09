@@ -1,14 +1,14 @@
-import discord,re
+import discord,re,asyncpg,aiohttp
 from discord.ext import commands
-
+from discord import errors
 #channel id 587466715407843328 , server id = 448081955221798923
 def server_check(ctx):
-	return ctx.message.guild.id == 448081955221798923
+	return ctx.message.guild.id == 205630530237104128
 
 class submit(commands.Cog):
 	def __init__(self,bot):
 		self.bot=bot
-
+		self.pool = bot.pool
 	@commands.command()
 	@commands.check(server_check)
 	async def submit(self,ctx):
@@ -25,20 +25,123 @@ class submit(commands.Cog):
 			
 			await ctx.message.author.send(invalid)
 		else:
-			thing = await self.bot.fetch_invite(var.group())
-			if thing is not None:
-				if thing.approximate_member_count > 30:
-					say = "Sent by <@" + str(ctx.message.author.id) +">"
-					channel = self.bot.get_channel(587466715407843328)
-					await channel.send(reply.content)
-					await channel.send(say)
-					await ctx.message.author.send(confirm)
-				else:
-					await ctx.message.author.send("Your server does not have enough members to apply for submission , please re-read the #how-to-list channel carefully.")
+			try:
+				thing = await self.bot.fetch_invite(var.group())
+				guild_id=thing.guild.id
+				if thing is not None:
+					if thing.approximate_member_count > 30:
+						try:
+							async with self.pool.acquire() as conn:
+								temp=await conn.fetchval('''SELECT msgid FROM submissions WHERE serverid=$1''',guild_id)# this block only executes to indicate that the server is already submitted
+								if temp:
+									await ctx.author.send("This server has already been submitted earlier and is pending approval by the mod team.")
+								else:
+									raise Exception("Next Block")
+						except Exception as e:
+							say = "Sent by <@" + str(ctx.message.author.id) +">"
+							channel = self.bot.get_channel(707262359781245039)
+							final=await channel.send(reply.content+"""\n\n"""+say)
+							await ctx.message.author.send(confirm) 
+							async with self.pool.acquire() as conn:
+								await conn.execute('''INSERT INTO submissions(msgid,message,userid,serverid) VALUES($1,$2,$3,$4)''',final.id,reply.content,reply.author.id,guild_id)
+					else:
+						await ctx.message.author.send("Your server does not have enough members to apply for submission , please re-read the #how-to-list channel carefully.")
 
-			else:
+				else:
+					await ctx.message.author.send(invalid)
+			except:
 				await ctx.message.author.send(invalid)
-				
-		
+	@commands.command()
+	@commands.check(server_check)
+	async def dbadd(self,ctx):#add column for server name and insertion on read by using the invite and invite.servername or something 
+		channel = self.bot.get_channel(707262359781245039)
+		regex = re.compile("https://(discord\.gg/[^\s]*)")
+		async for elem in channel.history(oldest_first=True):
+			try:
+				if elem.mentions == []:
+					var = regex.search(elem.content)
+					guild_invite = await self.bot.fetch_invite(var.group())
+					guild_id=guild_invite.guild.id
+					async with self.pool.acquire() as conn:
+						await conn.execute('''INSERT INTO submissions(msgid,message,serverid) VALUES($1,$2,$3)''',elem.id,elem.content,guild_id)
+						message_id = elem.id
+				else:
+					async with self.pool.acquire() as conn:
+						await conn.execute('''UPDATE submissions SET userid = $1,msg=$2 WHERE msgid =$3''',elem.mentions[0].id,elem.id,message_id)
+			except Exception as e:
+				raise(e)
+	@commands.command()
+	@commands.check(server_check)
+	async def decline(self,ctx,msgid:int):
+		channel = self.bot.get_channel(707262359781245039)
+		regex = re.compile("https://(discord\.gg/[^\s]*)")
+		try:
+			message = await channel.fetch_message(msgid)
+			async with self.pool.acquire() as conn:
+				invite = await conn.fetchval('''SELECT message FROM submissions WHERE msgid = $1''',msgid)
+				ques = await ctx.message.author.send("""Are you sure you want to decline this invite ?(yes/no) \n ```"""+invite+ """```""")
+				def check(message):
+					return message.author.id == ctx.message.author.id and not message.guild 
+				reply = await self.bot.wait_for('message',check=check)
+				if reply.content.lower() == 'yes':
+					await ctx.message.author.send("What is the reason for the rejection? (explain in one message)")
+					reason = await self.bot.wait_for('message',check=check)
+					recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',msgid)
+					var = regex.search(invite)
+					try:
+						guild_invite = await self.bot.fetch_invite(var.group())
+						guild_name = str(guild_invite.guild)
+						recipient_user= self.bot.get_user(recipient)
+						await message.delete()
+						try:
+							msg2_id = await conn.fetchval('''SELECT msg FROM submissions WHERE msgid=$1''',msgid)
+							await ctx.message.author.send(msg2_id)
+							msg2=await channel.fetch_message(msg2_id)
+							await msg2.delete()
+						except Exception as e:
+							pass
+						await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',msgid)
+						try:
+							await recipient_user.send("""Your server submission to MSP for  """+guild_name+""" has been rejected with the following reason given:\n ``` """+reason.content+""" ```""")
+							await ctx.message.author.send("The submission has been declined and deleted from the submissions channel.")
+						except:
+							await ctx.message.author.send("The submission has been deleted from the submissions channel but the submitter could not be notified , they are most likely not a member of MSP at the moment.")
+					except:
+						await ctx.message.author.send("the submission has an expired invitation , please use the !delete command to delete it as it can not be declined.")
+		except discord.DiscordException as e:
+			await ctx.author.send("that's an invalid message id.")
+
+
+	@commands.command()
+	@commands.check(server_check)
+	async def delete(self,ctx,msgid:int):
+		channel = self.bot.get_channel(707262359781245039)
+		try:
+			message = await channel.fetch_message(msgid)
+			async with self.pool.acquire() as conn:
+				invite = await conn.fetchval('''SELECT message FROM submissions WHERE msgid = $1''',msgid)
+			if invite:
+				ques = await ctx.message.author.send("""Are you sure you want to delete this invite ?(yes/no) This will not inform the submitter just delete from the submissions channel. \n ```"""+invite+ """```""")
+				def check(message):
+					return message.author.id == ctx.message.author.id and not message.guild 
+				reply = await self.bot.wait_for('message',check=check)
+				if reply.content.lower() == 'yes':
+					async with self.pool.acquire() as conn:
+						await message.delete()
+						try:
+							msg2_id = await conn.fetchval('''SELECT msg FROM submissions WHERE msgid=$1''',msgid)
+							msg2=await channel.fetch_message(msg2_id)
+							await msg2.delete()
+						except:
+							pass
+						await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',msgid)
+						await ctx.message.author.send('The submission has been deleted.')
+			else:
+				await ctx.message.author.send("that's an invalid message id.")
+
+		except:
+			await ctx.message.author.send("that's an invalid message id.")
+
+
 def setup(bot):
 	bot.add_cog(submit(bot))
