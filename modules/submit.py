@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import errors
 #channel id 587466715407843328 , server id = 448081955221798923
 def server_check(ctx):
-	return ctx.message.guild.id == 205630530237104128
+	return ctx.message.guild.id == 448081955221798923 
 
 class submit(commands.Cog):
 	def __init__(self,bot):
@@ -39,7 +39,7 @@ class submit(commands.Cog):
 									raise Exception("Next Block")
 						except Exception as e:
 							say = "Sent by <@" + str(ctx.message.author.id) +">"
-							channel = self.bot.get_channel(707262359781245039)
+							channel = self.bot.get_channel(587466715407843328)
 							final=await channel.send(reply.content+"""\n\n"""+say)
 							await ctx.message.author.send(confirm) 
 							async with self.pool.acquire() as conn:
@@ -51,29 +51,32 @@ class submit(commands.Cog):
 					await ctx.message.author.send(invalid)
 			except:
 				await ctx.message.author.send(invalid)
+	# @commands.command()
+	# @commands.check(server_check)
+	# @commands.has_role('Manager')
+	# async def dbadd(self,ctx):#add column for server name and insertion on read by using the invite and invite.servername or something 
+	# 	channel = self.bot.get_channel(587466715407843328)
+	# 	regex = re.compile("https://(discord\.gg/[^\s]*)")
+	# 	async for elem in channel.history(oldest_first=True):
+	# 		try:
+	# 			if elem.mentions == []:
+	# 				var = regex.search(elem.content)
+	# 				guild_invite = await self.bot.fetch_invite(var.group())
+	# 				guild_id=guild_invite.guild.id
+	# 				async with self.pool.acquire() as conn:
+	# 					await conn.execute('''INSERT INTO submissions(msgid,message,serverid) VALUES($1,$2,$3)''',elem.id,elem.content,guild_id)
+	# 					message_id = elem.id
+	# 			else:
+	# 				async with self.pool.acquire() as conn:
+	# 					await conn.execute('''UPDATE submissions SET userid = $1,msg=$2 WHERE msgid =$3''',elem.mentions[0].id,elem.id,message_id)
+	# 		except Exception as e:
+	# 			raise(e)
 	@commands.command()
 	@commands.check(server_check)
-	async def dbadd(self,ctx):#add column for server name and insertion on read by using the invite and invite.servername or something 
-		channel = self.bot.get_channel(707262359781245039)
-		regex = re.compile("https://(discord\.gg/[^\s]*)")
-		async for elem in channel.history(oldest_first=True):
-			try:
-				if elem.mentions == []:
-					var = regex.search(elem.content)
-					guild_invite = await self.bot.fetch_invite(var.group())
-					guild_id=guild_invite.guild.id
-					async with self.pool.acquire() as conn:
-						await conn.execute('''INSERT INTO submissions(msgid,message,serverid) VALUES($1,$2,$3)''',elem.id,elem.content,guild_id)
-						message_id = elem.id
-				else:
-					async with self.pool.acquire() as conn:
-						await conn.execute('''UPDATE submissions SET userid = $1,msg=$2 WHERE msgid =$3''',elem.mentions[0].id,elem.id,message_id)
-			except Exception as e:
-				raise(e)
-	@commands.command()
-	@commands.check(server_check)
+	@commands.has_role('Manager')
 	async def decline(self,ctx,msgid:int):
-		channel = self.bot.get_channel(707262359781245039)
+		channel = self.bot.get_channel(587466715407843328)
+		processed_channel=self.bot.get_channel(457979407253110797)
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		try:
 			message = await channel.fetch_message(msgid)
@@ -95,12 +98,13 @@ class submit(commands.Cog):
 						await message.delete()
 						try:
 							msg2_id = await conn.fetchval('''SELECT msg FROM submissions WHERE msgid=$1''',msgid)
-							await ctx.message.author.send(msg2_id)
+							# await ctx.message.author.send(msg2_id)
 							msg2=await channel.fetch_message(msg2_id)
 							await msg2.delete()
 						except Exception as e:
 							pass
 						await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',msgid)
+						await processed_channel.send("DECLINED: "+guild_name)
 						try:
 							await recipient_user.send("""Your server submission to MSP for  """+guild_name+""" has been rejected with the following reason given:\n ``` """+reason.content+""" ```""")
 							await ctx.message.author.send("The submission has been declined and deleted from the submissions channel.")
@@ -114,8 +118,9 @@ class submit(commands.Cog):
 
 	@commands.command()
 	@commands.check(server_check)
+	@commands.has_role('Manager')
 	async def delete(self,ctx,msgid:int):
-		channel = self.bot.get_channel(707262359781245039)
+		channel = self.bot.get_channel(587466715407843328)
 		try:
 			message = await channel.fetch_message(msgid)
 			async with self.pool.acquire() as conn:
