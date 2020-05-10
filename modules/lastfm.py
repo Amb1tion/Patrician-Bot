@@ -74,7 +74,8 @@ class lastfm(commands.Cog):
                     # await self.bot.add_reaction(emo, emojis[0])
                     # await self.bot.add_reaction(emo,emojis[1])
             except Exception as e:
-                await ctx.send(e)
+                if isinstance(e,IndexError):
+                    await ctx.send("There was a problem , either your account has not scrobbled anything yet or last.fm did not respond.")
 
     def output(self,ctx,mess,user):
         image1=mess['recenttracks']['track'][0]['image'][2]['#text']
@@ -82,12 +83,10 @@ class lastfm(commands.Cog):
         trackname1=mess['recenttracks']['track'][0]['name']
         albumname1=mess['recenttracks']['track'][0]['album']['#text']
         artist1=mess['recenttracks']['track'][0]['artist']['#text']
-        temp=albumname1+" by "+artist1
+        temp=artist1+" "+albumname1+" "+ "album rym"
         term=temp.replace(" ","%20")
         albumlink="https://duckduckgo.com/?q=%5Csite%3Arateyourmusic.com+<"+term+">"
-        var= albumlink.replace("(","%28") #this is a hack to fix a mobile embed rendering bug where paranthesis in the link caused the hyperlink to break
-        var1=var.replace(")","%29")# %28 %29 are url encodes for paranthesis https://www.w3schools.com/tags/ref_urlencode.asp
-        hyperlink = "["+albumname1+"]"+"("+var1+")"
+        hyperlink = "["+albumname1+"]"+"("+albumlink+")"
         if image1 is "":
             image1 = "https://i.imgur.com/ZneU91v.jpg"
         if image2 is "":
@@ -99,7 +98,7 @@ class lastfm(commands.Cog):
 
         embed.set_thumbnail(url=image1)
         embed.set_author(name=user
-                         , url="https://www.last.fm/user/"+user,
+                         , url="https://www.last.fm/"+user,
                          icon_url=ctx.message.author.avatar_url)
         embed.set_footer(text="Previous: "+mess['recenttracks']['track'][1]['artist']['#text']+" - "+mess['recenttracks']['track'][1]['name'],
                           icon_url=image2)
