@@ -104,7 +104,7 @@ class submit(commands.Cog):
 						except Exception as e:
 							pass
 						await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',msgid)
-						await processed_channel.send("DECLINED: "+guild_name)
+						await processed_channel.send("DECLINED: "+guild_name+"""\nREASON: """+reason.content+"""\nDecision By: <@"""+str(ctx.message.author.id)+">"+"""\nSubmitted By: <@"""+str(recipient)+">")
 						try:
 							await recipient_user.send("""Your server submission to MSP for  """+guild_name+""" has been rejected with the following reason given:\n ``` """+reason.content+""" ```""")
 							await ctx.message.author.send("The submission has been declined and deleted from the submissions channel.")
@@ -147,6 +147,40 @@ class submit(commands.Cog):
 		except:
 			await ctx.message.author.send("that's an invalid message id.")
 
+	@commands.command()
+	@commands.check(server_check)
+	@commands.has_role('Manager')
+	async def accept(self,ctx,msgid:int):
+		channel = self.bot.get_channel(587466715407843328)
+		processed_channel=self.bot.get_channel(457979407253110797)
+		regex = re.compile("https://(discord\.gg/[^\s]*)")
+		try:
+			message = await channel.fetch_message(msgid)
+			async with self.pool.acquire() as conn:
+				invite = await conn.fetchval('''SELECT message FROM submissions WHERE msgid=$1''',msgid)
+				recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid=$1''',msgid)
+				ques = await ctx.message.author.send('''Are you sure you want to accept this invite? (yes/no) This will not inform the submitter just list the server as accepted in #processed-servers \n ```'''+invite+'```')
+				def check(message):
+					return message.author.id == ctx.message.author.id and not message.guild
+				reply = await self.bot.wait_for('message',check=check)
+				var = regex.search(invite)
+				if reply.content.lower() == 'yes':
+					await message.delete()
+					try:
+						msg2_id = await conn.fetchval('''SELECT msg FROM submissions WHERE msgid=$1''',msgid)
+						msg2=await channel.fetch_message(msg2_id)
+						await msg2.delete()
+					except:
+						pass
+					guild_invite = await self.bot.fetch_invite(var.group())
+					guild_name = str(guild_invite.guild)
+					await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',msgid)
+					await processed_channel.send("ACCEPTED: "+guild_name+"""\nDecision By: <@"""+str(ctx.message.author.id)+">"+"""\nSubmitted By: <@"""+str(recipient)+">")
+					await ctx.message.author.send('The submission has been removed from #server-submissions and listed as accepted in #processed-servers.')
+
+					
+		except Exception as e:
+			await ctx.message.author.send(e)
 
 def setup(bot):
 	bot.add_cog(submit(bot))
