@@ -16,7 +16,7 @@ startup_extensions = ['modules.youtube'
 prefix_cache = {}
 conditions_cache = {}
 non_removable = ['help', 'prefix', 'remove', 'info', 'ball_add', 'hug_add']
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.message.author.id == 197938114218426370
@@ -103,6 +103,8 @@ async def on_command_error(ctx,error):
 		mess = await ctx.send("Slow down.")
 		await asyncio.sleep(2)
 		await bot.delete_message(mess)
+	else:
+		await ctx.send(error) #DEBUG REMOVE BEFORE PRODUCTION
 
 
 @bot.event
