@@ -1,4 +1,4 @@
-import discord,aiohttp,configparser,json
+import discord,aiohttp,configparser,json,urllib.parse
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
@@ -84,7 +84,7 @@ class lastfm(commands.Cog):
         albumname1=mess['recenttracks']['track'][0]['album']['#text']
         artist1=mess['recenttracks']['track'][0]['artist']['#text']
         temp=artist1+" "+albumname1+" "+ "album rym"
-        term=temp.replace(" ","%20")
+        term=urllib.parse.quote(temp)
         albumlink="https://duckduckgo.com/?q=%5Csite%3Arateyourmusic.com+<"+term+">"
         hyperlink = "["+albumname1+"]"+"("+albumlink+")"
         if image1 is "":
@@ -98,7 +98,7 @@ class lastfm(commands.Cog):
 
         embed.set_thumbnail(url=image1)
         embed.set_author(name=user
-                         , url="https://www.last.fm/"+user,
+                         , url="https://www.last.fm/user/"+user,
                          icon_url=ctx.message.author.avatar_url)
         embed.set_footer(text="Previous: "+mess['recenttracks']['track'][1]['artist']['#text']+" - "+mess['recenttracks']['track'][1]['name'],
                           icon_url=image2)
