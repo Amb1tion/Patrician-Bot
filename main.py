@@ -5,7 +5,9 @@ config = configparser.ConfigParser()
 config.read('bot_config.ini')
 cogs_list = ['weekly',
 			'submit',
-			'lastfm']
+			'lastfm',
+			'charts',
+			'countdown']
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.author.id == 197938114218426370
 

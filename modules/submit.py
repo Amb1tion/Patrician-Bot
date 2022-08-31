@@ -29,7 +29,7 @@ class MyModal(discord.ui.Modal):
 		# await interaction.response.send_message(embeds=[embed])
 		if self.decision == "Rejected":
 			await self.message.mentions[0].send(embeds=[embed])
-
+		embed.add_field(name="Evaluated By: ",value = "<@"+str(interaction.user.id)+">")
 
 		await self.channel.send(embeds=[embed])
 		async with self.pool.acquire() as conn:	
