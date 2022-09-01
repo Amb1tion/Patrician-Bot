@@ -11,7 +11,7 @@ cogs_list = ['weekly',
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.author.id == 197938114218426370
 
-bot = discord.Bot(debug_guilds=[205630530237104128])#server id for personal debuggging server , prevents commands from syncing globally
+bot = discord.Bot()#server id for personal debuggging server , prevents commands from syncing globally
 async def db_init(bot): #creating a pool connection to the database for connecctions
 	if not hasattr(bot, 'pool'):
 		bot.pool = await asyncpg.create_pool(config['keys']['db'])
