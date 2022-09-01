@@ -4,7 +4,7 @@ from discord.ext import commands
 def server_check(ctx):
 	return ctx.guild_id == 448081955221798923
 def channel_check(ctx):
-	return ctx.channel.id == 318685903331655680
+	return ctx.channel_id == 318685903331655680
 
 class MyModal(discord.ui.Modal):
 	def __init__(self,msg:discord.Message,recipient,pool,decision,server,channel,*args, **kwargs) -> None:
