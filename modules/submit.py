@@ -88,8 +88,7 @@ class submit(commands.Cog):
 			except:
 				await ctx.author.send(invalid)
 	@commands.message_command(name="Reject Application",guild_ids=[448081955221798923]) 
-	@commands.check(channel_check)
-	@commands.has_role('Portal Manager')
+	@commands.has_permissions(manage_channels=True)
 	async def reject(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
@@ -103,7 +102,6 @@ class submit(commands.Cog):
 		await ctx.send_modal(modal)
 	
 	@commands.message_command(name="Delete Application",guild_ids=[448081955221798923]) 
-	@commands.check(channel_check)
 	@commands.has_role('Portal Manager')
 	async def Delete(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
@@ -118,7 +116,6 @@ class submit(commands.Cog):
 		await ctx.send_modal(modal)
 	
 	@commands.message_command(name="Accept Application",guild_ids=[448081955221798923]) 
-	@commands.check(channel_check)
 	@commands.has_role('Portal Manager')
 	async def Accept(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
