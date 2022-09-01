@@ -2,7 +2,7 @@ import discord,re
 from discord.ext import commands
 
 def server_check(ctx):
-	return ctx.guild.id == 205630530237104128
+	return ctx.guild_id == 448081955221798923
 def channel_check(ctx):
 	return ctx.channel.id == 318685903331655680
 
@@ -46,7 +46,6 @@ class submit(commands.Cog):
 	
 	@commands.slash_command(guild_ids=[448081955221798923])
 	@commands.check(server_check)
-	@commands.has_role('Portal Manager')
 	async def submit(self,ctx: discord.ApplicationContext):
 		msg = "Reply to this conversation with your server invite and (brief) description. Read #how-to-list before applying."
 		invalid="Your reply was late or you did not provide a valid discord invite(formatted as https://discord.gg/) use the !submit command again"
