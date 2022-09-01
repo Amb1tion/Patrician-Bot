@@ -42,8 +42,9 @@ class submit(commands.Cog):
 		self.bot = bot
 		self.pool = bot.pool
 	
-	@commands.slash_command()
+	@commands.slash_command(guild_ids=[205630530237104128])
 	@commands.check(server_check)
+	@commands.has_role('Portal Manager')
 	async def submit(self,ctx: discord.ApplicationContext):
 		msg = "Reply to this conversation with your server invite and (brief) description. Read #how-to-list before applying."
 		invalid="Your reply was late or you did not provide a valid discord invite(formatted as https://discord.gg/) use the !submit command again"
@@ -85,8 +86,9 @@ class submit(commands.Cog):
 					await ctx.author.send(invalid)
 			except:
 				await ctx.author.send(invalid)
-	@commands.message_command(name="Reject Application") 
-	@commands.check(channel_check) 
+	@commands.message_command(name="Reject Application",guild_ids=[205630530237104128]) 
+	@commands.check(channel_check)
+	@commands.has_role('Portal Manager')
 	async def reject(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
@@ -99,8 +101,9 @@ class submit(commands.Cog):
 		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Rejected",server=server_name,channel=channel)
 		await ctx.send_modal(modal)
 	
-	@commands.message_command(name="Delete Application") 
-	@commands.check(channel_check) 
+	@commands.message_command(name="Delete Application",guild_ids=[205630530237104128]) 
+	@commands.check(channel_check)
+	@commands.has_role('Portal Manager')
 	async def Delete(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
@@ -113,8 +116,9 @@ class submit(commands.Cog):
 		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Deleted",server=server_name,channel=channel)
 		await ctx.send_modal(modal)
 	
-	@commands.message_command(name="Accept Application") 
-	@commands.check(channel_check) 
+	@commands.message_command(name="Accept Application",guild_ids=[205630530237104128]) 
+	@commands.check(channel_check)
+	@commands.has_role('Portal Manager')
 	async def Accept(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)

@@ -6,7 +6,7 @@ class weekly(commands.Cog):
 		self.bot = bot
 		self.pool = bot.pool
 
-	@commands.slash_command(guild_ids=[205630530237104128])
+	@commands.slash_command()
 	async def weekly(self,ctx: discord.ApplicationContext,
 	size: discord.Option(str,"3x3 , 4x4 , 5x5",required=False,default="3x3" )):
 		await ctx.defer()
@@ -44,7 +44,7 @@ class weekly(commands.Cog):
 					f = io.BytesIO(var)	
 		await ctx.send_followup(file=discord.File(filename='image.png',fp=f),content=ctx.author.mention + ' here\'s your chart')
 
-	@commands.slash_command(guild_ids=[205630530237104128])
+	@commands.slash_command()
 	async def monthly(self,ctx: discord.ApplicationContext,
 	size: discord.Option(str,"3x3 , 4x4 , 5x5",required=False,default="3x3" )):
 		await ctx.defer()
@@ -82,7 +82,7 @@ class weekly(commands.Cog):
 					f = io.BytesIO(var)	
 		await ctx.send_followup(file=discord.File(filename='image.png',fp=f),content=ctx.author.mention + ' here\'s your chart')
 
-	@commands.slash_command(guild_ids=[205630530237104128])
+	@commands.slash_command()
 	async def yearly(self,ctx: discord.ApplicationContext,
 	size: discord.Option(str,"3x3 , 4x4 , 5x5",required=False,default="3x3" )):
 		await ctx.defer()
