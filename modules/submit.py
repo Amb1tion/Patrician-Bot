@@ -41,8 +41,10 @@ class submit(commands.Cog):
 	def __init__(self,bot):
 		self.bot = bot
 		self.pool = bot.pool
+		self.applications_channel=587466715407843328
+		self.processed_channel=457979407253110797
 	
-	@commands.slash_command(guild_ids=[205630530237104128])
+	@commands.slash_command(guild_ids=[448081955221798923])
 	@commands.check(server_check)
 	@commands.has_role('Portal Manager')
 	async def submit(self,ctx: discord.ApplicationContext):
@@ -74,7 +76,7 @@ class submit(commands.Cog):
 									raise Exception("Next Block")
 						except Exception as e:
 							say = "Sent by <@" + str(ctx.author.id) +">"
-							channel = self.bot.get_channel(318685903331655680)
+							channel = self.bot.get_channel(self.applications_channel)
 							final=await channel.send(reply.content+"""\n\n"""+say)
 							await ctx.author.send(confirm) 
 							async with self.pool.acquire() as conn:
@@ -86,13 +88,13 @@ class submit(commands.Cog):
 					await ctx.author.send(invalid)
 			except:
 				await ctx.author.send(invalid)
-	@commands.message_command(name="Reject Application",guild_ids=[205630530237104128]) 
+	@commands.message_command(name="Reject Application",guild_ids=[448081955221798923]) 
 	@commands.check(channel_check)
 	@commands.has_role('Portal Manager')
 	async def reject(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
-		channel = self.bot.get_channel(318685903331655680)
+		channel = self.bot.get_channel(self.processed_channel)
 		thing = await self.bot.fetch_invite(var.group())
 		server_name = thing.guild.name
 		async with self.pool.acquire() as conn:
@@ -101,13 +103,13 @@ class submit(commands.Cog):
 		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Rejected",server=server_name,channel=channel)
 		await ctx.send_modal(modal)
 	
-	@commands.message_command(name="Delete Application",guild_ids=[205630530237104128]) 
+	@commands.message_command(name="Delete Application",guild_ids=[448081955221798923]) 
 	@commands.check(channel_check)
 	@commands.has_role('Portal Manager')
 	async def Delete(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
-		channel = self.bot.get_channel(318685903331655680)
+		channel = self.bot.get_channel(self.processed_channel)
 		thing = await self.bot.fetch_invite(var.group())
 		server_name = thing.guild.name
 		async with self.pool.acquire() as conn:
@@ -116,13 +118,13 @@ class submit(commands.Cog):
 		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Deleted",server=server_name,channel=channel)
 		await ctx.send_modal(modal)
 	
-	@commands.message_command(name="Accept Application",guild_ids=[205630530237104128]) 
+	@commands.message_command(name="Accept Application",guild_ids=[448081955221798923]) 
 	@commands.check(channel_check)
 	@commands.has_role('Portal Manager')
 	async def Accept(self,ctx:discord.ApplicationContext, message: discord.Message):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
-		channel = self.bot.get_channel(318685903331655680)
+		channel = self.bot.get_channel(self.processed_channel)
 		thing = await self.bot.fetch_invite(var.group())
 		server_name = thing.guild.name
 		async with self.pool.acquire() as conn:

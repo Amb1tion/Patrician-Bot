@@ -11,7 +11,7 @@ cogs_list = ['weekly',
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.author.id == 197938114218426370
 
-bot = discord.Bot(debug_guilds=[205630530237104128])
+bot = discord.Bot(debug_guilds=[205630530237104128])#server id for personal debuggging server , prevents commands from syncing globally
 async def db_init(bot): #creating a pool connection to the database for connecctions
 	if not hasattr(bot, 'pool'):
 		bot.pool = await asyncpg.create_pool(config['keys']['db'])
@@ -22,10 +22,6 @@ asyncio.get_event_loop().run_until_complete(db_init(bot)) #creates the db connec
 @bot.event
 async def on_read():
 	print(f"We have logged in as {bot.user}")
-
-@bot.slash_command(name = "hello", description = "Say hello to the bot",guild_ids=[205630530237104128])
-async def hello(ctx):
-	await ctx.respond("Hey")
 
 ##OWNER COMMANDS
 @bot.slash_command(description="Load cog",guild_ids=[205630530237104128])
