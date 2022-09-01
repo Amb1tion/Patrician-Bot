@@ -100,7 +100,7 @@ class lastfm(commands.Cog):
 		return embed
 
 	# fm = SlashCommandGroup("fm","Various last.fm commands")
-	@commands.slash_command(name="fm",description="Shows your currently playing or last played last.fm scrobble",guild_ids=[205630530237104128])
+	@commands.slash_command(name="fm",description="Shows your currently playing or last played last.fm scrobble")
 	@option("username",description="Set your username via this field",default=None)
 	async def now_playing(self,ctx:discord.ApplicationContext,username:str):
 	# username: discord.Option(str,name="username",description="Set your username via this field",default=None,required=False)):
