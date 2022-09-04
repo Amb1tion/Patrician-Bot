@@ -113,6 +113,7 @@ class submit(commands.Cog):
 			async with self.pool.acquire() as conn:
 			# recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',message.id)
 				await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',message.id)
+				await message.delete()
 				await ctx.respond("Message Deleted",ephemeral=True)
 		except:
 			await ctx.respond("invalid message selection")
