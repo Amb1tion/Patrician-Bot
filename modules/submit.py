@@ -93,27 +93,30 @@ class submit(commands.Cog):
 		regex = re.compile("https://(discord\.gg/[^\s]*)")
 		var = regex.search(message.content)
 		channel = self.bot.get_channel(self.processed_channel)
-		thing = await self.bot.fetch_invite(var.group())
-		server_name = thing.guild.name
-		async with self.pool.acquire() as conn:
-			recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',message.id)
-		author=self.bot.get_user(recipient)
-		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Rejected",server=server_name,channel=channel)
-		await ctx.send_modal(modal)
+		try:
+			thing = await self.bot.fetch_invite(var.group())
+			server_name = thing.guild.name
+			async with self.pool.acquire() as conn:
+				recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',message.id)
+			author=self.bot.get_user(recipient)
+			modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Rejected",server=server_name,channel=channel)
+			await ctx.send_modal(modal)
+		except discord.NotFound:
+			await ctx.respond('This has an expired invite , please use the delete option from the menu')
+
 	
 	@commands.message_command(name="Delete Application",guild_ids=[448081955221798923]) 
 	@commands.has_role('Portal Manager')
 	async def Delete(self,ctx:discord.ApplicationContext, message: discord.Message):
-		regex = re.compile("https://(discord\.gg/[^\s]*)")
-		var = regex.search(message.content)
-		channel = self.bot.get_channel(self.processed_channel)
-		thing = await self.bot.fetch_invite(var.group())
-		server_name = thing.guild.name
-		async with self.pool.acquire() as conn:
-			recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',message.id)
-		author=self.bot.get_user(recipient)
-		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Deleted",server=server_name,channel=channel)
-		await ctx.send_modal(modal)
+
+		try:
+			async with self.pool.acquire() as conn:
+			# recipient = await conn.fetchval('''SELECT userid FROM submissions WHERE msgid =$1''',message.id)
+				await conn.execute('''DELETE FROM submissions WHERE msgid=$1''',message.id)
+				await ctx.respond("Message Deleted",ephemeral=True)
+		except:
+			await ctx.respond("invalid message selection")
+
 	
 	@commands.message_command(name="Accept Application",guild_ids=[448081955221798923]) 
 	@commands.has_role('Portal Manager')
@@ -128,7 +131,7 @@ class submit(commands.Cog):
 		author=self.bot.get_user(recipient)
 		modal = MyModal(title=server_name,msg=message,recipient=author,pool=self.pool,decision="Accepted",server=server_name,channel=channel)
 		await ctx.send_modal(modal)
-
+# handle dead server invite errors and members left the server errors
 
 def setup(bot):
 	bot.add_cog(submit(bot))

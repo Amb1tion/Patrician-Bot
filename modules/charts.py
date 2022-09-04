@@ -38,28 +38,14 @@ class charts(commands.Cog):
 				print(e)
 				await ctx.respond("Invalid Input",ephemeral=True)
 
-	# @chart.command(description = 'Use this to submit your chart')
-	# async def submit(self,ctx,link:str):
-	# 	await ctx.message.channel.trigger_typing()
-	# 	Regex = re.compile(
-	# 		'^https://.*\.(com|net)/.+(\.jpg|\.png|\.jpeg)$|^http://.*\.(com|net)/.+(\.jpg|\.png|\.jpeg)$|.*\.(com|net)/.+(\.jpg|\.png|\.jpeg)$')
-	# 	try:
-	# 		var = Regex.search(link)
-	# 		if var is not None:
-	# 			async with self.pool.acquire() as conn:
-	# 				try:
-	# 					await conn.execute('''INSERT INTO users(userid,chart) VALUES($1,$2)''',ctx.message.author.id,link)
-	# 				except:
-	# 					await conn.execute('''UPDATE users SET chart = $1 WHERE userid = $2''',link,ctx.message.author.id)
-	# 				await ctx.send("Your chart has been submitted, you may call it using !chart")
-	# 		elif var is None:
-	# 			await ctx.send("Invalid Input.")
-
-	# 	except Exception as e:
-	# 		print(e)
-	# 		await ctx.send("Invalid Input")
-
-
+	@commands.message_command(name="Get Chart",description="Get a user's Topster Chart")
+	async def get_chart(self,ctx:discord.ApplicationContext,message:discord.Message):
+		async with self.pool.acquire() as conn:
+			try:
+				val = await conn.fetchval('SELECT chart FROM users WHERE userid = $1',message.author.id)
+				await ctx.respond(val)
+			except:
+				await ctx.respond('Something went wrong , maybe they haven\'t submitted a chart yet?')
 	
 	# @chart.command(pass_context=True , description= "Tag whoever's chart you want to judge. example: !chart get @Amb1tion#6969")
 	# async def get(self,ctx,m:discord.Member):
