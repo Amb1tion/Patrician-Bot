@@ -11,7 +11,7 @@ cogs_list = ['weekly',
 def is_owner(ctx):  # defining the bot owner check
 	return ctx.author.id == 197938114218426370
 
-bot = discord.AutoShardedBot(guild_ids=[205630530237104128])#server id for personal debuggging server , prevents commands from syncing globally
+bot = discord.AutoShardedBot(guild_ids=[1047385465994612836])#server id for personal debuggging server , prevents commands from syncing globally
 async def db_init(bot): #creating a pool connection to the database for connecctions
 	if not hasattr(bot, 'pool'):
 		bot.pool = await asyncpg.create_pool(config['keys']['db'])
@@ -24,7 +24,7 @@ async def on_read():
 	print(f"We have logged in as {bot.user}")
 
 ##OWNER COMMANDS
-@bot.slash_command(description="Load cog",guild_ids=[205630530237104128])
+@bot.slash_command(description="Load cog",guild_ids=[1047385465994612836])
 @commands.check(is_owner)
 async def load(ctx,name: discord.Option(str,required=True)):
 	"""Loads an extension."""
@@ -36,7 +36,7 @@ async def load(ctx,name: discord.Option(str,required=True)):
 	await ctx.respond("{} loaded.".format(name),ephemeral=True)
 
 
-@bot.slash_command(description="Unload Cog",guild_ids=[205630530237104128])
+@bot.slash_command(description="Unload Cog",guild_ids=[1047385465994612836])
 @commands.check(is_owner)
 async def unload(ctx,name: discord.Option(str,required=True)):
 	"""Removes an extension"""
@@ -44,7 +44,7 @@ async def unload(ctx,name: discord.Option(str,required=True)):
 	await ctx.respond('Unloaded: ' + name,ephemeral=True)
 
 
-@bot.slash_command(guild_ids=[205630530237104128])
+@bot.slash_command(guild_ids=[1047385465994612836])
 @commands.check(is_owner)
 async def reload(ctx,name: discord.Option(str,required=True)):
 	"""Reloads an extension"""
