@@ -45,4 +45,4 @@ lastfm_api_secret = #########################
 ```
 # Requirements
 * Python 3.5+
-* Async Discord.py without voice
+* Pycord discord wrapper
