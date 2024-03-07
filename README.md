@@ -30,7 +30,7 @@ Store a chart of your favorite albums , get other's charts and also find out wha
 
 
 # Running The Bot
-I'd prefer if you'd just invite my bot to your server [(using this link)](https://discord.com/oauth2/authorize?client_id=280080975617196032&permissions=2147797056&scope=bot) instead of trying to run your own instance but if you're convinced you want to make that happen then you need to make a bot_config.ini file with the following format.
+I'd prefer if you'd just invite my bot to your server [(using this link)](https://discord.com/oauth2/authorize?client_id=280080975617196032&permissions=2147797056&scope=bot+applications.commands) instead of trying to run your own instance but if you're convinced you want to make that happen then you need to make a bot_config.ini file with the following format.
 ``` 
 [keys]
 bot_token = ##############################         ;(your bot token from the discord developers page)
